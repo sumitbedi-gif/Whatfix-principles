@@ -48,7 +48,7 @@ export function Playground({
 
   return (
     <div className="flex h-full flex-col">
-      {/* Stage — full app fills it, demo reveals on click */}
+      {/* Stage, full app fills it, demo reveals on click */}
       <div className="relative flex-1 overflow-hidden rounded-3xl bg-panel p-6 sm:p-8">
         <AnimatePresence mode="wait">
           <motion.div
@@ -83,7 +83,7 @@ export function Playground({
         </AnimatePresence>
       </div>
 
-      {/* Controls dock — a single compact line, right-aligned, so it keeps a
+      {/* Controls dock, a single compact line, right-aligned, so it keeps a
           small vertical footprint and leaves the stage as tall as possible on
           shorter screens. Caption on the left, toggle(s) on the right. */}
       {(demo.toggles.length > 0 || demo.caption) && (

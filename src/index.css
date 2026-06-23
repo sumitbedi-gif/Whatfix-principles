@@ -24,7 +24,7 @@ body {
   font-feature-settings: 'cv05', 'cv08', 'ss01';
 }
 
-/* Fraunces display — high-contrast editorial serif with optical sizing. */
+/* Fraunces display, high-contrast editorial serif with optical sizing. */
 .font-display {
   font-family: 'Fraunces', Georgia, ui-serif, serif;
   font-optical-sizing: auto;

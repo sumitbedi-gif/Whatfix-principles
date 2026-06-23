@@ -263,7 +263,7 @@ interface Flow {
   label: string
 }
 
-/** The full library — what a generic Self-Help dumps on every page. */
+/** The full library, what a generic Self-Help dumps on every page. */
 const ALL_FLOWS: Flow[] = [
   { icon: Play, label: 'Take the product tour' },
   { icon: FileText, label: 'Set up your first project' },
@@ -368,7 +368,7 @@ export function HicksSelfHelpOverlay({ state }: { state: ToggleState }) {
         )}
       </AnimatePresence>
 
-      {/* The Self-Help FAB — always present. */}
+      {/* The Self-Help FAB, always present. */}
       <button
         onClick={() => setOpen((o) => !o)}
         className="absolute bottom-4 right-4 z-20 grid h-12 w-12 place-items-center rounded-full bg-accent text-white shadow-float transition-transform hover:scale-105"

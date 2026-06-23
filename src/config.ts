@@ -110,6 +110,43 @@ export interface Persona {
   lenses: Record<PactKey, { headline: string; detail: string }>
 }
 
+/**
+ * Know-your-product: a "tool" is one Studio content type, placed in the orbit.
+ * `icon` is a key resolved to a lucide icon in ToolOrbit.
+ */
+export interface Tool {
+  id: string
+  label: string
+  icon: string
+}
+
+/**
+ * An intent (job to be done). Selecting it highlights the tool ids it resolves
+ * to and dims the rest. `line` is the spoken framing for that job.
+ */
+export interface Intent {
+  id: string
+  /** Accordion heading, e.g. "I need to inform, without stopping them." */
+  title: string
+  /** The job, in a phrase. */
+  job: string
+  /** Longer framing shown when expanded. */
+  line: string
+  /** Tool ids that light up for this intent. */
+  tools: string[]
+}
+
+/** A full pre-designed persona card (image), shown in the examples carousel. */
+export interface PersonaCard {
+  id: string
+  /** Short name, e.g. "Grace". */
+  name: string
+  /** One-line role, e.g. "Sales Manager · Large enterprise". */
+  role: string
+  /** Path to the full card image. */
+  src: string
+}
+
 export interface Principle {
   id: string
   /** Two-digit ordinal, e.g. "01". */
@@ -134,19 +171,48 @@ export interface Principle {
   pact?: PactDimension[]
   personas?: Persona[]
   /**
-   * The fill-in-the-blank statement shown on the cover. Each segment is either
-   * static prose (`text`) or a slot: the bracketed options, plus the one value
-   * that blurs in when the statement is clicked.
+   * Full persona-card images shown in the "Some examples" section as an
+   * interactive carousel (center card focused, neighbours blurred; click to
+   * open full-screen).
    */
-  statement?: StatementSegment[]
+  personaCards?: PersonaCard[]
+  /**
+   * A "tools" principle (Know your product) renders intent accordions + an
+   * orbiting constellation of Studio content types that highlight per intent.
+   */
+  tools?: Tool[]
+  intents?: Intent[]
+  /**
+   * The fill-in-the-blank statement shown on the cover. The first slot is a
+   * picker (e.g. expertise); choosing a value fills every other slot to a
+   * coherent persona via `statement.presets`.
+   */
+  statement?: Statement
 }
 
 export interface StatementSegment {
-  /** Static prose run. */
+  /** Static prose run between slots. */
   text?: string
-  /** A fillable slot. `options` are the bracket choices; `chosen` blurs in. */
-  options?: string[]
-  chosen?: string
+  /** Marks a fillable slot; `slot` indexes into a preset's `fills`. */
+  slot?: number
+}
+
+export interface StatementPreset {
+  /** The picker label for this persona, e.g. "a veteran". */
+  choice: string
+  /** The value that blurs into each slot, in slot order. */
+  fills: string[]
+}
+
+export interface Statement {
+  /** The statement broken into prose + slots. Slot 0 is the picker. */
+  segments: StatementSegment[]
+  /** The choices shown in the first slot, before any pick. */
+  options: string[]
+  /** Subtle hint shown in each non-picker slot before a pick, in slot order. */
+  placeholders: string[]
+  /** One coherent fill set per picker choice. */
+  presets: StatementPreset[]
 }
 
 export const CONFIG: Principle[] = [
@@ -162,46 +228,84 @@ export const CONFIG: Principle[] = [
       'Every principle after this one is just a way of answering a question you can’t answer yet: who is this for? You built the app, which makes you the world’s least typical user of it. The person on the other side has a different brain, a different day, and a different amount of fear than you do.',
       'PACT (Benyon’s framework) is the scaffold: People tells you who, Activities tells you what, Context tells you when and where, Technology tells you through what. You need all four before you design anything. Pick a lens on the right and watch the same task split into three very different people.',
     ],
-    statement: [
-      { text: 'I’m ' },
-      {
-        options: ['veteran', 'intermediate', 'first-timer'],
-        chosen: 'a first-timer',
-      },
-      { text: ' at this. I do this task ' },
-      { options: ['many times a day', 'once a quarter'], chosen: 'once a quarter' },
-      { text: ', and it’s ' },
-      { options: ['routine', 'high-stakes'], chosen: 'high-stakes' },
-      { text: '. Right now I’m ' },
-      {
-        options: [
-          'calm and focused',
-          'rushed and interrupted',
-          'anxious about getting it wrong',
-        ],
-        chosen: 'anxious about getting it wrong',
-      },
-      { text: ', on ' },
-      {
-        options: ['my work laptop', 'a shared terminal', 'my phone on the floor'],
-        chosen: 'a shared terminal',
-      },
-      { text: ', and what I actually want is to ' },
-      {
-        options: ['finish and move on', 'not screw this up', 'understand what changed'],
-        chosen: 'not screw this up',
-      },
-      { text: '.' },
-    ],
+    statement: {
+      // Each slot maps to a PACT letter, so filling it in literally answers
+      // the framework: P · A · A · P · C · T · goal.
+      segments: [
+        { text: 'I’m ' },
+        { slot: 0 },
+        { text: ' at this. I do it ' },
+        { slot: 1 },
+        { text: ', and it’s ' },
+        { slot: 2 },
+        { text: '. Right now I’m ' },
+        { slot: 3 },
+        { text: ', ' },
+        { slot: 4 },
+        { text: ', working on ' },
+        { slot: 5 },
+        { text: ', and what I really want is to ' },
+        { slot: 6 },
+        { text: '.' },
+      ],
+      options: ['a veteran', 'intermediate', 'a first-timer'],
+      placeholders: [
+        'expertise',
+        'how often',
+        'the stakes',
+        'mood',
+        'where',
+        'device',
+        'the goal',
+      ],
+      presets: [
+        {
+          choice: 'a veteran',
+          fills: [
+            'a veteran',
+            'many times a day',
+            'routine',
+            'calm',
+            'at a quiet desk',
+            'dual monitors',
+            'finish and move on',
+          ],
+        },
+        {
+          choice: 'intermediate',
+          fills: [
+            'intermediate',
+            'a few times a week',
+            'familiar but fiddly',
+            'mostly confident',
+            'between meetings',
+            'my work laptop',
+            'get it right without asking',
+          ],
+        },
+        {
+          choice: 'a first-timer',
+          fills: [
+            'a first-timer',
+            'once a quarter',
+            'high-stakes',
+            'anxious',
+            'on a noisy floor',
+            'a shared terminal',
+            'not get it wrong',
+          ],
+        },
+      ],
+    },
     pact: [
       {
         key: 'people',
         letter: 'P',
         label: 'People',
-        blurb: 'Who they are — on spectrums, not labels.',
+        blurb: 'Who they are, on spectrums, not labels.',
         lensImage: {
           src: '/personas/people-watercolour.png',
-          caption: 'Same task, same app — a calm veteran and an anxious novice are not the same user.',
+          caption: 'Same task, same app. A calm veteran and an anxious novice are not the same user.',
         },
         points: [
           { term: 'Expertise', detail: 'veteran ↔ intermediate ↔ first-timer (most apps serve all three at once)' },
@@ -216,8 +320,12 @@ export const CONFIG: Principle[] = [
         letter: 'A',
         label: 'Activities',
         blurb: 'What they’re actually doing.',
+        lensImage: {
+          src: '/personas/activities.png',
+          caption: 'The same person, two tasks. An everyday action and a once-a-month one need very different guidance.',
+        },
         points: [
-          { term: 'Frequency', detail: 'many-times-a-day vs. once-a-quarter — this alone decides tooltip vs. flow' },
+          { term: 'Frequency', detail: 'many-times-a-day vs. once-a-quarter. This alone decides tooltip vs. flow.' },
           { term: 'Complexity', detail: 'simple and habitual vs. complex and rare' },
           { term: 'Stakes', detail: 'trivial vs. costly-if-wrong vs. irreversible' },
           { term: 'Continuity', detail: 'one focused task vs. constantly interrupted and resumed' },
@@ -228,6 +336,10 @@ export const CONFIG: Principle[] = [
         letter: 'C',
         label: 'Context',
         blurb: 'The conditions around the moment.',
+        lensImage: {
+          src: '/personas/context.png',
+          caption: 'Working leisurely versus racing a deadline changes everything about how guidance should land.',
+        },
         points: [
           { term: 'Time pressure', detail: 'leisurely vs. racing a deadline or a customer on the phone' },
           { term: 'Physical environment', detail: 'quiet desk vs. noisy floor vs. on the move' },
@@ -240,10 +352,14 @@ export const CONFIG: Principle[] = [
         letter: 'T',
         label: 'Technology',
         blurb: 'What they’re working through.',
+        lensImage: {
+          src: '/personas/technology.png',
+          caption: 'Laptop, tablet, or phone. The device reshapes what guidance can even do.',
+        },
         points: [
           { term: 'Device & screen', detail: 'dual monitors vs. a phone' },
           { term: 'Input', detail: 'mouse, touch, or keyboard-only' },
-          { term: 'Performance & network', detail: 'fast vs. laggy — laggy guidance feels broken' },
+          { term: 'Performance & network', detail: 'fast vs. laggy. Laggy guidance feels broken.' },
           { term: 'Access & constraints', detail: 'permissions, browser, assistive tech' },
         ],
       },
@@ -277,10 +393,30 @@ export const CONFIG: Principle[] = [
         tone: 'rushed',
         lenses: {
           people: { headline: 'Rushed & mobile', detail: 'Intermediate, but distracted. Splitting attention between this and the world.' },
-          activities: { headline: 'Interrupted', detail: 'Constantly stopped and resumed — guidance must survive a context switch.' },
+          activities: { headline: 'Interrupted', detail: 'Constantly stopped and resumed, so guidance must survive a context switch.' },
           context: { headline: 'On the move', detail: 'Noisy, moving, maybe a customer waiting. Racing the clock.' },
           technology: { headline: 'Phone, one hand', detail: 'Small touch screen, patchy network. Laggy guidance feels broken.' },
         },
+      },
+    ],
+    personaCards: [
+      {
+        id: 'grace',
+        name: 'Grace',
+        role: 'Sales Manager · Large enterprise',
+        src: '/personas/persona-grace.png',
+      },
+      {
+        id: 'lee',
+        name: 'Lee',
+        role: 'HR Specialist · Entry-level',
+        src: '/personas/persona-lee.png',
+      },
+      {
+        id: 'nigel',
+        name: 'Nigel',
+        role: 'CIO · Large enterprise',
+        src: '/personas/persona-nigel.png',
       },
     ],
   },
@@ -289,7 +425,67 @@ export const CONFIG: Principle[] = [
     ordinal: '02',
     label: 'Know your product',
     summary: 'Guidance only lands when it speaks the product’s own language.',
-    status: 'soon',
+    status: 'live',
+    cover:
+      'Knowing your product isn’t knowing the names of the content types. It’s knowing what each one is for: its job, its cost, when it earns its place, and when it’s the wrong answer.',
+    intro: [
+      'Last principle, you learned to read the user. Now you learn the tools, because matching one to the other, at the right moment, is the entire job. The same message can succeed as a Smart Tip and fail as a modal. The tool is half the design.',
+      'So don’t organize by content type. Organize by the job to be done. Start from the moment and work back to the tool. Pick an intent on the right and watch which tools earn their place, and which are the wrong answer.',
+    ],
+    tools: [
+      { id: 'flow', label: 'Flow', icon: 'flow' },
+      { id: 'link', label: 'Link', icon: 'link' },
+      { id: 'video', label: 'Video', icon: 'video' },
+      { id: 'article', label: 'Article', icon: 'article' },
+      { id: 'beacon', label: 'Beacon', icon: 'beacon' },
+      { id: 'smart-tip', label: 'Smart Tip', icon: 'smartTip' },
+      { id: 'launcher', label: 'Launcher', icon: 'launcher' },
+      { id: 'blocker', label: 'Blocker', icon: 'blocker' },
+      { id: 'cues', label: 'Cues', icon: 'cues' },
+      { id: 'popup', label: 'Pop-up', icon: 'popup' },
+      { id: 'survey', label: 'Survey', icon: 'survey' },
+      { id: 'mirror', label: 'Mirror', icon: 'mirror' },
+      { id: 'task-list', label: 'Task List', icon: 'taskList' },
+      { id: 'self-help', label: 'Self-Help', icon: 'selfHelp' },
+      { id: 'quick-read', label: 'Quick Read', icon: 'quickRead' },
+    ],
+    intents: [
+      {
+        id: 'inform',
+        title: 'I need to inform, without stopping them.',
+        job: 'Presence without interruption.',
+        line: 'Low stakes, don’t break flow. The job is to be present without taking over: a quiet inline note, a cue at the edge of attention, a non-blocking pop-up they can ignore.',
+        tools: ['smart-tip', 'beacon', 'cues', 'popup'],
+      },
+      {
+        id: 'guide',
+        title: 'I need to guide them through something.',
+        job: 'Walk beside them.',
+        line: 'A real task, step by step. Walk beside them with an interactive flow, break a multi-session journey into a task list, or let them practice safely in a mirror.',
+        tools: ['flow', 'task-list', 'mirror', 'video'],
+      },
+      {
+        id: 'prevent',
+        title: 'I need to prevent a mistake.',
+        job: 'Stop the error before it happens.',
+        line: 'High stakes, costly if wrong. Stop the error before it happens: block the path, or warn at the exact point of action with a Smart Tip.',
+        tools: ['blocker', 'smart-tip'],
+      },
+      {
+        id: 'nudge',
+        title: 'I need to nudge at exactly the right moment.',
+        job: 'Appear only when relevant, then disappear.',
+        line: 'Timing is everything. Appear only when it’s relevant, then disappear: a conditional cue or beacon, a just-in-time pop-up, a launcher they pull when ready.',
+        tools: ['cues', 'beacon', 'popup', 'launcher'],
+      },
+      {
+        id: 'self-serve',
+        title: 'I need them to find help on their own.',
+        job: 'Be there when they come looking.',
+        line: 'Self-service, on demand. Be there when they come looking: a Self-Help widget, searchable articles and videos, and Quick Reads they pull up themselves.',
+        tools: ['self-help', 'article', 'video', 'quick-read', 'link'],
+      },
+    ],
   },
   {
     id: 'flow-state',
@@ -459,7 +655,7 @@ export const CONFIG: Principle[] = [
     ],
     proof: {
       source: 'Market-research firm',
-      body: 'Employees couldn’t interpret dashboard metrics like LOI, Incidence, and Drop-off — no in-app definitions existed, so people pinged senior staff repeatedly. Hover Smart Tips placed on each metric dropped related support queries to zero.',
+      body: 'Employees couldn’t interpret dashboard metrics like LOI, Incidence, and Drop-off. No in-app definitions existed, so people pinged senior staff repeatedly. Hover Smart Tips placed on each metric dropped related support queries to zero.',
       metric: '44%',
       metricLabel: 'engagement across the 48-user base',
     },

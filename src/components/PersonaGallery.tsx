@@ -76,7 +76,7 @@ function PersonaCard({
       transition={{ duration: 0.4, ease, delay: index * 0.06 }}
       className={`flex flex-col rounded-2xl border border-grey-100 bg-white p-5 shadow-soft ring-1 ${tone.ring}`}
     >
-      {/* Portrait — illustration slot, falls back to an initialled disc. */}
+      {/* Portrait, illustration slot, falls back to an initialled disc. */}
       <div className="flex items-center gap-3">
         {persona.illustration ? (
           <img
@@ -109,7 +109,7 @@ function PersonaCard({
         </div>
       </div>
 
-      {/* The active lens view — animates on lens change. */}
+      {/* The active lens view, animates on lens change. */}
       <div className="mt-4 border-t border-grey-100 pt-4">
         <AnimatePresence mode="wait">
           <motion.div
@@ -134,7 +134,7 @@ function PersonaCard({
 
 /**
  * Three contrasting people, the same task, seen through one PACT lens at a
- * time. Switching the lens (from the rail) re-renders every card — same humans,
+ * time. Switching the lens (from the rail) re-renders every card, same humans,
  * four views. The interaction is choosing the lens; there's no toggle.
  *
  * When the active lens carries an illustration (`dimension.lensImage`), the
@@ -151,27 +151,20 @@ export function PersonaGallery({
 
   if (dimension.lensImage) {
     return (
-      <AnimatePresence mode="wait">
-        <motion.div
-          key={lens}
-          initial={{ opacity: 0, y: 12 }}
-          animate={{ opacity: 1, y: 0 }}
-          exit={{ opacity: 0, y: -12 }}
-          transition={{ duration: 0.32, ease }}
-          className="flex h-full flex-col items-center justify-center gap-6 rounded-2xl bg-white px-6"
-        >
-          <img
+      <div className="flex h-full items-center justify-center rounded-2xl bg-white px-6">
+        <AnimatePresence mode="wait">
+          <motion.img
+            key={lens}
             src={dimension.lensImage.src}
             alt=""
-            className="max-h-[60%] w-auto max-w-full object-contain"
+            initial={{ opacity: 0, scale: 0.98, filter: 'blur(12px)' }}
+            animate={{ opacity: 1, scale: 1, filter: 'blur(0px)' }}
+            exit={{ opacity: 0, filter: 'blur(12px)' }}
+            transition={{ duration: 0.5, ease }}
+            className="max-h-[58%] w-auto max-w-[78%] object-contain"
           />
-          {dimension.lensImage.caption && (
-            <p className="max-w-md text-balance text-center text-[14px] leading-relaxed text-grey-500">
-              {dimension.lensImage.caption}
-            </p>
-          )}
-        </motion.div>
-      </AnimatePresence>
+        </AnimatePresence>
+      </div>
     )
   }
 

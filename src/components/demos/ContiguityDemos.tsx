@@ -9,21 +9,21 @@ export const METRICS: Metric[] = [
     value: '14m',
     delta: '▲ 1.2m',
     deltaGood: false,
-    def: 'Length of Interview — the average time a respondent takes to finish the survey.',
+    def: 'Length of Interview: the average time a respondent takes to finish the survey.',
   },
   {
     label: 'Incidence',
     value: '62%',
     delta: '▲ 4%',
     deltaGood: true,
-    def: 'Incidence Rate — the share of screened people who actually qualify for the survey.',
+    def: 'Incidence Rate: the share of screened people who actually qualify for the survey.',
   },
   {
     label: 'Drop-off',
     value: '23%',
     delta: '▼ 2%',
     deltaGood: true,
-    def: 'Drop-off Rate — the share who start the survey but abandon it before submitting.',
+    def: 'Drop-off Rate: the share who start the survey but abandon it before submitting.',
   },
 ]
 

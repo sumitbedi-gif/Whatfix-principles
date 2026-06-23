@@ -12,7 +12,7 @@ import { useState } from 'react'
  *   - badges:     metric-card indices wearing a "New" badge (signalling)
  *   - focusField: show the accent focus ring + caret (in-flow cue)
  *   - metrics:    render real labelled data cards (LOI, IR, …) instead of bars
- *   - tipMode:    where field definitions live — 'detached' (one info icon by
+ *   - tipMode:    where field definitions live, 'detached' (one info icon by
  *                 the dashboard title) or 'anchored' (an info icon on each card)
  */
 export interface Metric {
@@ -332,7 +332,7 @@ function TooltipTour({ crisp }: { crisp: boolean }) {
                   <p className="text-[10.5px] font-semibold uppercase tracking-wide text-accent">
                     Step {step + 1} of {TOUR_STEPS.length}
                   </p>
-                  {/* The crisp instruction line is the heading itself — no
+                  {/* The crisp instruction line is the heading itself, no
                       separate title or body, one fewer line to read. */}
                   <h4 className="mt-1.5 pr-5 text-[14px] font-semibold tracking-[-0.01em] text-ink">
                     {s.crisp}
@@ -498,7 +498,7 @@ export function SkeletonApp({
   // Internal tab state for the temporal-contiguity demo.
   const [tab, setTab] = useState(0)
   const [dismissed, setDismissed] = useState(false)
-  // Flipping the timing toggle is a fresh intent — re-arm the nudge.
+  // Flipping the timing toggle is a fresh intent, re-arm the nudge.
   const [seenTiming, setSeenTiming] = useState(nudgeTiming)
   if (seenTiming !== nudgeTiming) {
     setSeenTiming(nudgeTiming)
@@ -582,7 +582,7 @@ export function SkeletonApp({
           {coherentForm != null ? (
             <CoherenceForm coherent={coherentForm} />
           ) : tabs && tab === 1 ? (
-            /* Tab 2 — a different surface (the "Reports" area). */
+            /* Tab 2, a different surface (the "Reports" area). */
             <div>
               <h3 className="mb-4 text-[13px] font-semibold tracking-[-0.01em] text-ink">
                 Reports
@@ -618,7 +618,7 @@ export function SkeletonApp({
             </div>
           ) : (
             <>
-          {/* Dashboard header — carries the detached definitions affordance:
+          {/* Dashboard header, carries the detached definitions affordance:
               one info icon beside the title that explains every field at once. */}
           {metrics && (
             <div className="mb-3 flex items-center gap-1.5">
@@ -634,7 +634,7 @@ export function SkeletonApp({
                     {metrics.map((m) => (
                       <li key={m.label} className="text-[12px] leading-snug">
                         <span className="font-semibold">{m.label}</span>
-                        <span className="text-white/70"> — {m.def}</span>
+                        <span className="text-white/70">, {m.def}</span>
                       </li>
                     ))}
                   </ul>
@@ -643,7 +643,7 @@ export function SkeletonApp({
             </div>
           )}
 
-          {/* Metric cards — grey bars by default; real data when `metrics` set. */}
+          {/* Metric cards, grey bars by default; real data when `metrics` set. */}
           <div className="mb-6 grid grid-cols-3 gap-3">
             {[0, 1, 2].map((i) => {
               const badged = badges.includes(i)
@@ -668,7 +668,7 @@ export function SkeletonApp({
                           <InfoTip placement="bottom">
                             <p className="text-[12px] leading-snug">
                               <span className="font-semibold">{metric.label}</span>
-                              <span className="text-white/75"> — {metric.def}</span>
+                              <span className="text-white/75">, {metric.def}</span>
                             </p>
                           </InfoTip>
                         )}
@@ -711,7 +711,7 @@ export function SkeletonApp({
                 <div className="h-9 w-full rounded-lg border border-grey-200 bg-grey-50" />
               </div>
 
-              {/* Focused field — in-flow cue, or a real contextual field. */}
+              {/* Focused field, in-flow cue, or a real contextual field. */}
               {contextField != null ? (
                 <ContextField contextual={contextField} />
               ) : (
@@ -754,7 +754,7 @@ export function SkeletonApp({
         </main>
       </div>
 
-      {/* Temporal-contiguity nudge — slides up from the bottom of the stage. */}
+      {/* Temporal-contiguity nudge, slides up from the bottom of the stage. */}
       <AnimatePresence>
         {nudgeOpen && (
           <WalkthroughNudge onDismiss={() => setDismissed(true)} />

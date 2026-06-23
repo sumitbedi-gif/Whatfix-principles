@@ -74,9 +74,9 @@ export function PrincipleCover({
               ease,
             }}
           >
-            <StatementReveal segments={principle.statement} />
+            <StatementReveal statement={principle.statement} />
             <p className="mt-4 text-[12.5px] text-grey-400">
-              Tap the statement to meet one real user.
+              Pick who your user is, and the rest fills in to match.
             </p>
           </motion.div>
         ) : (

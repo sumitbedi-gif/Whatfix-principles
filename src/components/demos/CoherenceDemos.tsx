@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { AnimatePresence, motion } from 'motion/react'
-import { UploadCloud, FileUp, Check } from 'lucide-react'
+import { UploadCloud, FileUp } from 'lucide-react'
 import type { AppProps, ToggleState } from './registry'
 
 const ease = [0.22, 1, 0.36, 1] as const
@@ -63,7 +63,7 @@ export function CoherencePruneOverlay({ state }: { state: ToggleState }) {
 
         {/* Primary upload controls */}
         <div className="mt-4 space-y-2.5">
-          {/* Drag & drop — always kept (the 82% path) */}
+          {/* Drag & drop, always kept (the 82% path) */}
           <button
             onClick={() => setShowUsage(true)}
             className="relative flex w-full flex-col items-center justify-center gap-2 rounded-xl border-2 border-dashed border-accent/40 bg-accent-soft py-7"
@@ -75,7 +75,7 @@ export function CoherencePruneOverlay({ state }: { state: ToggleState }) {
             {usage && <UsageTag pct={82} />}
           </button>
 
-          {/* Redundant "Upload Contract" button — removed when pruned */}
+          {/* Redundant "Upload Contract" button, removed when pruned */}
           <AnimatePresence>
             {!pruned && (
               <motion.button
@@ -130,34 +130,6 @@ export function CoherencePruneOverlay({ state }: { state: ToggleState }) {
             )
           })}
         </div>
-
-        <AnimatePresence mode="wait">
-          {pruned ? (
-            <motion.div
-              key="done"
-              initial={{ opacity: 0, y: 6 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0 }}
-              transition={{ duration: 0.3, ease, delay: 0.15 }}
-              className="mt-5 flex items-center gap-1.5 text-[11.5px] text-grey-500"
-            >
-              <Check size={13} className="text-accent" strokeWidth={2.75} />
-              Retired the controls under 5% usage — decluttered on evidence.
-            </motion.div>
-          ) : (
-            !usage && (
-              <motion.p
-                key="hint"
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                exit={{ opacity: 0 }}
-                className="mt-5 text-[11.5px] text-grey-400"
-              >
-                Click a control to see how often it’s actually used.
-              </motion.p>
-            )
-          )}
-        </AnimatePresence>
       </div>
     </div>
   )
