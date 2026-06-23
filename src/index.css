@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,360;9..144,400;9..144,500&family=Inter:wght@400;450;500;600&family=Geist+Mono:wght@400;500&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,360;9..144,400;9..144,500&family=Inter:wght@400;450;500;600&family=Geist+Mono:wght@400;500&family=Patrick+Hand&display=swap');
 
 @tailwind base;
 @tailwind components;
@@ -30,6 +30,11 @@ body {
   font-optical-sizing: auto;
   font-weight: 400;
   letter-spacing: -0.018em;
+}
+
+/* Patrick Hand, handwritten label for the persona stickers. */
+.font-hand {
+  font-family: 'Patrick Hand', ui-rounded, cursive;
 }
 
 .no-scrollbar {

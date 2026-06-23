@@ -4,8 +4,8 @@ import { ArrowLeft, Users } from 'lucide-react'
 import type { PactKey, Principle } from '../config'
 import { ScenarioAccordion } from '../components/ScenarioAccordion'
 import { Playground } from '../components/Playground'
-import { PersonaGallery } from '../components/PersonaGallery'
 import { PersonaCarousel } from '../components/PersonaCarousel'
+import { PactStickerBoard } from '../components/PactStickerBoard'
 import { ToolOrbit } from '../components/ToolOrbit'
 import { PrincipleCover } from './PrincipleCover'
 
@@ -215,10 +215,9 @@ function PactAccordion({
 function FrameworkLayout({ principle }: { principle: Principle }) {
   const pact = principle.pact ?? []
   const cards = principle.personaCards ?? []
-  // The right panel shows either a PACT lens or the persona-card carousel.
-  const [active, setActive] = useState<PactKey | 'examples'>(
-    pact[0]?.key ?? 'people',
-  )
+  // Nothing selected by default → every sticker is highlighted. Selecting a
+  // lens narrows it; clicking the open one again clears back to all.
+  const [active, setActive] = useState<PactKey | 'examples' | null>(null)
   const activeDimension = pact.find((d) => d.key === active)
 
   return (
@@ -268,7 +267,9 @@ function FrameworkLayout({ principle }: { principle: Principle }) {
                 blurb={d.blurb}
                 points={d.points}
                 active={d.key === active}
-                onSelect={() => setActive(d.key)}
+                onSelect={() =>
+                  setActive((cur) => (cur === d.key ? null : d.key))
+                }
               />
             ))}
           </div>
@@ -316,18 +317,16 @@ function FrameworkLayout({ principle }: { principle: Principle }) {
         )}
       </div>
 
-      {/* RIGHT, persona lens gallery, or the persona-card carousel */}
+      {/* RIGHT, sticker board by lens, or the persona-card carousel */}
       <div className="relative flex flex-1 flex-col bg-white p-5 lg:py-7 lg:pr-7">
-        <div className="flex-1 rounded-3xl bg-panel p-6 sm:p-8">
-          {active === 'examples'
-            ? cards.length > 0 && <PersonaCarousel cards={cards} />
-            : principle.personas &&
-              activeDimension && (
-                <PersonaGallery
-                  personas={principle.personas}
-                  dimension={activeDimension}
-                />
-              )}
+        <div className="flex-1 overflow-hidden rounded-3xl bg-panel">
+          {active === 'examples' ? (
+            <div className="h-full p-6 sm:p-8">
+              {cards.length > 0 && <PersonaCarousel cards={cards} />}
+            </div>
+          ) : (
+            <PactStickerBoard active={activeDimension?.key ?? null} />
+          )}
         </div>
       </div>
     </div>
