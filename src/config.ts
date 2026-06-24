@@ -435,26 +435,6 @@ export const CONFIG: Principle[] = [
         },
       },
     ],
-    personaCards: [
-      {
-        id: 'grace',
-        name: 'Grace',
-        role: 'Sales Manager · Large enterprise',
-        src: '/personas/persona-grace.png',
-      },
-      {
-        id: 'lee',
-        name: 'Lee',
-        role: 'HR Specialist · Entry-level',
-        src: '/personas/persona-lee.png',
-      },
-      {
-        id: 'nigel',
-        name: 'Nigel',
-        role: 'CIO · Large enterprise',
-        src: '/personas/persona-nigel.png',
-      },
-    ],
   },
   {
     id: 'know-your-product',
