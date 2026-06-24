@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,360;9..144,400;9..144,500&family=Inter:wght@400;450;500;600&family=Geist+Mono:wght@400;500&family=Patrick+Hand&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,360;9..144,400;9..144,500&family=Inter:wght@400;450;500;600&family=Geist+Mono:wght@400;500&family=Caveat:wght@500;600;700&display=swap');
 
 @tailwind base;
 @tailwind components;
@@ -32,9 +32,10 @@ body {
   letter-spacing: -0.018em;
 }
 
-/* Patrick Hand, handwritten label for the persona stickers. */
+/* Caveat, scribbled handwritten label for the persona stickers. */
 .font-hand {
-  font-family: 'Patrick Hand', ui-rounded, cursive;
+  font-family: 'Caveat', ui-rounded, cursive;
+  font-weight: 600;
 }
 
 .no-scrollbar {

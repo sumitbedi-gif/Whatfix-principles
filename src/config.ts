@@ -225,8 +225,8 @@ export const CONFIG: Principle[] = [
     cover:
       'You are not your user. You built the app, so you’re the least typical person to use it. Before any tooltip, you have to actually meet the person on the other side.',
     intro: [
-      'Every principle after this one is just a way of answering a question you can’t answer yet: who is this for? You built the app, which makes you the world’s least typical user of it. The person on the other side has a different brain, a different day, and a different amount of fear than you do.',
-      'PACT (Benyon’s framework) is the scaffold: People tells you who, Activities tells you what, Context tells you when and where, Technology tells you through what. You need all four before you design anything. Pick a lens on the right and watch the same task split into three very different people.',
+      'You are not your user. So before you design anything, what’s their state at this exact moment?',
+      'Every principle that follows is an answer to that one question. Carry the PACT lens through all of them: People tells you who, Activities what, Context when and where, Technology through what. Pick a lens on the right and watch the same task split into very different people.',
     ],
     statement: {
       // Each slot maps to a PACT letter, so filling it in literally answers

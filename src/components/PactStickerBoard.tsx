@@ -33,12 +33,12 @@ const STICKERS: Sticker[] = [
   // Row 2
   { src: 'context-1.png', lens: 'context', x: 5, y: 32, rotate: 4, w: 12, label: 'racing the clock' },
   { src: 'people-2.png', lens: 'people', x: 29, y: 33, rotate: -3, w: 17, label: 'calm veteran' },
-  { src: 'tech-1.png', lens: 'technology', x: 53, y: 32, rotate: 2, w: 14, label: 'on a call' },
+  { src: 'tech-1.png', lens: 'context', x: 53, y: 37, rotate: 2, w: 14, label: 'customer on the phone' },
   { src: 'tech-2.png', lens: 'technology', x: 76, y: 32, rotate: -5, w: 13, label: 'reading a tablet' },
   // Row 3
   { src: 'tech-3.png', lens: 'technology', x: 12, y: 58, rotate: 3, w: 13, label: 'on the phone' },
   { src: 'tech-4.png', lens: 'technology', x: 40, y: 59, rotate: -2, w: 14, label: 'one hand on a tablet' },
-  { src: 'activity-3.png', lens: 'activities', x: 73, y: 68, rotate: 4, w: 21, label: 'once a quarter' },
+  { src: 'activity-3.png', lens: 'people', x: 73, y: 68, rotate: 4, w: 21, label: 'intermediate user' },
 ]
 
 /** A static film-grain canvas, multiply-blended over the board. */
@@ -111,7 +111,7 @@ export function PactStickerBoard({ active }: { active: PactKey | null }) {
               draggable={false}
             />
             <motion.span
-              className="font-hand pointer-events-none mt-2 whitespace-nowrap text-center text-[20px] leading-none text-white/90 [text-shadow:_0_1px_3px_rgba(0,0,0,0.45)]"
+              className="font-hand pointer-events-none mt-2 whitespace-nowrap text-center text-[30px] leading-none text-white/90 [text-shadow:_0_1px_3px_rgba(0,0,0,0.45)]"
               animate={{ opacity: highlighted ? 1 : 0, y: highlighted ? 0 : -3 }}
               transition={{ duration: 0.3, ease, delay: highlighted ? 0.15 : 0 }}
             >
