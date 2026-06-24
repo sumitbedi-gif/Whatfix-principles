@@ -589,7 +589,7 @@ export const CONFIG: Principle[] = [
     proof: {
       source: 'Consumer-goods CMS rollout',
       body: '~900 users were drowning in a complex form. The fix wasn’t a popup explaining it; it was quiet hover tooltips that appeared only when needed.',
-      metric: '268,487',
+      metric: '~270K',
       metricLabel: 'guidance views, flow never broken',
     },
   },
@@ -670,7 +670,7 @@ export const CONFIG: Principle[] = [
     ],
     proof: {
       source: 'Auto-parts B2B portal',
-      body: 'A high-value feature shipped with no signal. 2,714 users found it in three weeks. The fix was one beacon with a “New” label, isolated against a flat UI.',
+      body: 'A high-value feature shipped with no signal. ~2,700 users found it in three weeks. The fix was one beacon with a “New” label, isolated against a flat UI.',
       metric: '+629%',
       metricLabel: 'engagement the next month',
     },
@@ -798,8 +798,8 @@ export const CONFIG: Principle[] = [
     proof: {
       source: 'Global legal-services firm',
       body: 'Attorneys needed off public AI tools and onto the sanctioned one. The popup gave exactly two CTAs, “Take me there” and “Leave me here”. Constrained choice, clean action.',
-      metric: '294',
-      metricLabel: 'users redirected (547 times) in 90 days',
+      metric: '~290',
+      metricLabel: 'users redirected (~550 times) in 90 days',
     },
   },
   {
@@ -994,8 +994,8 @@ export const CONFIG: Principle[] = [
     proof: {
       source: 'Global quick-service restaurant chain',
       body: 'The workforce was hand-translating 10–15-step tooltips via public AI tools or peers, 30 minutes to a full day per article. An in-app pop-up offering 11 languages, shown once and saved as a preference, made guidance match the model they arrived with.',
-      metric: '+60.8%',
-      metricLabel: 'unique engagement; a 95% faster top flow',
+      metric: '~60%',
+      metricLabel: 'more unique engagement; a 95% faster top flow',
     },
   },
   {
@@ -1057,8 +1057,8 @@ export const CONFIG: Principle[] = [
     proof: {
       source: 'Retail product-lifecycle tool',
       body: 'An error-prone “Season” field took roughly 30 seconds to fill by hand, every time, across thousands of records. A flow that auto-populated it on page view turned authoring into reviewing, and the misrouting errors from manual entry disappeared with the keystrokes.',
-      metric: '~93.5 hrs',
-      metricLabel: 'saved across 11,217 auto-filled entries',
+      metric: '~90 hrs',
+      metricLabel: 'saved across ~11,000 auto-filled entries',
     },
   },
 
