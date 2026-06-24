@@ -84,7 +84,7 @@ export function PrincipleCover({
             <BlurText
               as="p"
               text={principle.cover}
-              className="mt-7 max-w-lg text-balance text-[16px] leading-[1.7] text-grey-600"
+              className="mt-7 max-w-lg text-balance text-[18px] leading-[1.7] text-grey-600"
               stagger={0.018}
               delay={0.15 + principle.label.split(' ').length * 0.06 + 0.15}
             />

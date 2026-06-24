@@ -18,7 +18,7 @@ export function StatementReveal({ statement }: { statement: Statement }) {
   const preset = choice == null ? null : presets[choice]
 
   return (
-    <div className="max-w-lg text-pretty text-[16px] leading-[1.7] text-grey-600">
+    <div className="max-w-lg text-pretty text-[18px] leading-[1.7] text-grey-600">
       {segments.map((seg, i) => {
         if (seg.text) return <span key={i}>{seg.text}</span>
         const slot = seg.slot ?? 0

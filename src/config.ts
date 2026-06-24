@@ -274,7 +274,7 @@ export const CONFIG: Principle[] = [
         { slot: 1 },
         { text: ', and it’s ' },
         { slot: 2 },
-        { text: '. Right now I’m ' },
+        { text: '. Usually I feel ' },
         { slot: 3 },
         { text: ', working ' },
         { slot: 4 },
