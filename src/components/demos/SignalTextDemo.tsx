@@ -77,24 +77,24 @@ export function SignalTextOverlay({
         </button>
 
         <div className="p-6 pr-12">
-          <div className="flex items-center gap-2">
-            <AnimatePresence>
-              {on && (
-                <motion.span
-                  initial={{ opacity: 0, scale: 0.5, rotate: -8 }}
-                  animate={{ opacity: 1, scale: 1, rotate: 0 }}
-                  exit={{ opacity: 0, scale: 0.5 }}
-                  transition={{ type: 'spring', stiffness: 360, damping: 22 }}
-                  className="grid h-5 w-5 place-items-center text-accent"
-                >
+          <AnimatePresence>
+            {on && (
+              <motion.div
+                initial={{ opacity: 0, y: -6 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -6 }}
+                transition={{ duration: 0.28, ease }}
+                className="mb-3 flex"
+              >
+                <span className="grid h-9 w-9 place-items-center rounded-full bg-grey-100 text-accent">
                   <TriangleAlert size={17} strokeWidth={2.25} />
-                </motion.span>
-              )}
-            </AnimatePresence>
-            <h4 className="text-[16px] font-semibold tracking-[-0.01em] text-ink">
-              Account notice
-            </h4>
-          </div>
+                </span>
+              </motion.div>
+            )}
+          </AnimatePresence>
+          <h4 className="text-[16px] font-semibold tracking-[-0.01em] text-ink">
+            Account notice
+          </h4>
 
           <p className="mt-2.5 text-[13.5px] leading-relaxed text-grey-500">
             A <Phrase text="critical security issue" order={0} on={on} /> was

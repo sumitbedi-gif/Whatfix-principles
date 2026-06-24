@@ -580,7 +580,7 @@ export const CONFIG: Principle[] = [
     summary: 'Cue the eye to what matters. The thing that stands out is the thing remembered.',
     status: 'live',
     cover:
-      'Cue the eye to what matters with weight, colour, or a single highlight. The catch authors forget: **if everything is highlighted, nothing is.**',
+      '**Cue the eye to what matters** with weight, colour, or a single highlight. The catch authors forget: if everything is highlighted, nothing is.',
     intro: [
       'Signaling cues the eye to what matters through weight, colour, or a single highlight. The isolation effect (von Restorff) is its partner: the distinctive item is recalled far above its neighbours.',
       'The corollary authors forget is the whole game. If everything is highlighted, nothing is. One cue against a flat background does the work; ten cues cancel each other out.',
@@ -662,7 +662,7 @@ export const CONFIG: Principle[] = [
     summary: 'Keep related words and visuals together, in space and in time.',
     status: 'live',
     cover:
-      'When the explanation sits away from the thing it explains, the user pays a **working-memory tax** just stitching the two together. Put the words on the element and comprehension is immediate.',
+      'Contiguity is about space and time: put the explanation beside the thing it explains, and deliver it at the moment it’s needed. **The right help, in the right place** is when guidance stops being noise.',
     intro: [
       'The contiguity principle is simple: related words and visuals belong together, in space and in time. When an explanation lives away from what it explains, the eye has to leave, find the legend, read it, and travel back, holding both in mind.',
       'That round trip is a working-memory tax. Placed directly on the element, the same explanation lands instantly. The strongest form removes the journey entirely: bring the information to the point of work.',
@@ -728,7 +728,7 @@ export const CONFIG: Principle[] = [
     summary: 'Every extra choice taxes the decision. Narrow the path.',
     status: 'live',
     cover:
-      'Decision time rises with the number and complexity of options, roughly logarithmically. More choices doesn’t mean more help; it means **more hesitation, and often abandonment.**',
+      '**Decision time rises with the number and complexity of options,** roughly logarithmically. More choices doesn’t mean more help; it means more hesitation, and often abandonment.',
     intro: [
       'Hick’s Law: the time to decide rises with the number and complexity of options, roughly as log₂(n+1). Each option you add taxes the user before they have done anything at all.',
       'Two levers reduce it. Remove options, or, when you can’t, structure them, group, rank, default, so the user navigates categories instead of scanning a flat list. A recommended choice collapses the decision to “accept or browse”, the cheapest decision of all.',
@@ -789,7 +789,7 @@ export const CONFIG: Principle[] = [
     summary: 'Cut what doesn’t teach. Decoration competes with the message.',
     status: 'live',
     cover:
-      'People learn better when extraneous words, graphics, and detail are removed. Every non-essential element competes for the same limited working memory, so **“nice to have” content actively lowers comprehension.**',
+      '**People learn better when extraneous words, graphics, and detail are removed.** Every non-essential element competes for the same limited working memory, so “nice to have” content actively lowers comprehension.',
     intro: [
       'The coherence principle (Mayer) is the most counterintuitive one for authors: it asks you to subtract, not add. Every extra word, graphic, or “nice to have” detail competes for the same limited working memory, so it lowers comprehension rather than raising it.',
       'This isn’t tidying for aesthetics. Stripping extraneous material produced roughly a 105% average performance gain in Mayer & Moreno’s work, one of the largest effects in the literature. Even interesting additions hurt if they aren’t essential.',
@@ -922,7 +922,7 @@ export const CONFIG: Principle[] = [
     summary: 'Users arrive expecting yours to work like every product they already know.',
     status: 'live',
     cover:
-      'Users spend almost all their time in other products, so they arrive expecting yours to behave like the ones they already know. Their **mental model is pre-built,** and fighting it costs you.',
+      'Users spend almost all their time in other products, so **they arrive expecting yours to behave like the ones they already know.** Their mental model is pre-built, and fighting it costs you.',
     intro: [
       'Two ideas fused. Jakob’s Law: every convention a user learned elsewhere transfers to your product as an expectation. Mental models (Norman): people act on their internal picture of how something works, not on how it actually works.',
       'So the author’s job is to meet the model the user already carries, their language, their icons, their conventions, rather than forcing them to learn yours. Match the model and guidance feels invisible; violate it and even correct help gets missed.',
@@ -985,7 +985,7 @@ export const CONFIG: Principle[] = [
     summary: 'Every click, keystroke, and pointer journey is a tax. Charge less of it.',
     status: 'live',
     cover:
-      'Every click, keystroke, and pointer journey is a tax the user pays with their body, not their understanding. They can know exactly what to do and still **stall on the sheer physical effort** of doing it.',
+      '**Every click is an interaction cost.** Every movement is an interaction cost. The fewer steps between the user and the outcome, the better the guidance.',
     intro: [
       'Fitts’s Law: the time to hit a target rises with distance and falls with size. The broader motor-load idea (Weinschenk): physical effort suppresses adoption even when the user fully understands the task. Knowing what to do and being willing to do it are two different costs.',
       'So there’s a ladder of fixes, each cheaper than the last: fewer steps, then automate the step, then remove the journey to the step. Each scenario climbs one rung, and the click count drops as you go.',
