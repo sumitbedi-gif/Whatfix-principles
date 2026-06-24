@@ -357,7 +357,7 @@ export function HicksSelfHelpOverlay({ state }: { state: ToggleState }) {
 
             <div
               className={`space-y-0.5 px-1.5 py-2 ${
-                refined ? '' : 'max-h-[208px] overflow-y-auto'
+                refined ? '' : 'max-h-[320px] overflow-y-auto'
               }`}
             >
               {flows.map((f) => (

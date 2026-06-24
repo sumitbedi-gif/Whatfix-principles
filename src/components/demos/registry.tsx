@@ -24,6 +24,21 @@ import {
   coherencePruneApp,
   CoherencePruneOverlay,
 } from './CoherenceDemos'
+import {
+  recognitionCueApp,
+  recognitionFieldApp,
+  recognitionHelpApp,
+} from './RecognitionDemos'
+import {
+  jakobLanguageApp,
+  jakobIconApp,
+  jakobModelApp,
+} from './JakobDemos'
+import {
+  motorFlowApp,
+  motorAutofillApp,
+  motorTourApp,
+} from './MotorDemos'
 import type { Metric } from '../SkeletonApp'
 
 /** Toggles store booleans; a segmented control stores its chosen option id. */
@@ -42,6 +57,15 @@ export interface AppProps {
   coherentForm?: boolean | null
   tooltipTour?: boolean | null
   smartTipRung?: 'base' | 'good' | 'better'
+  recognitionCue?: boolean | null
+  recognitionField?: boolean | null
+  recognitionHelp?: boolean | null
+  jakobLanguage?: boolean | null
+  jakobIcon?: boolean | null
+  jakobModel?: boolean | null
+  motorFlow?: boolean | null
+  motorAutofill?: boolean | null
+  motorTour?: boolean | null
 }
 
 interface DemoEntry {
@@ -125,5 +149,47 @@ export const DEMOS: Record<DemoKind, DemoEntry> = {
   coherencePrune: {
     app: coherencePruneApp,
     Overlay: CoherencePruneOverlay,
+  },
+  recognitionCue: {
+    // The button + tip live in the app's top bar; no overlay.
+    app: recognitionCueApp,
+    Overlay: empty,
+  },
+  recognitionField: {
+    // The input field + format tip live in the app; no overlay.
+    app: recognitionFieldApp,
+    Overlay: empty,
+  },
+  recognitionHelp: {
+    // The Self-Help widget lives in the app; no overlay.
+    app: recognitionHelpApp,
+    Overlay: empty,
+  },
+  jakobLanguage: {
+    app: jakobLanguageApp,
+    Overlay: empty,
+  },
+  jakobIcon: {
+    app: jakobIconApp,
+    Overlay: empty,
+  },
+  jakobModel: {
+    app: jakobModelApp,
+    Overlay: empty,
+  },
+  motorFlow: {
+    // The typeable form + gated flow live inside the app; no overlay.
+    app: motorFlowApp,
+    Overlay: empty,
+  },
+  motorAutofill: {
+    // The auto-filling form lives inside the app; no overlay.
+    app: motorAutofillApp,
+    Overlay: empty,
+  },
+  motorTour: {
+    // The keyboard-driven tour lives inside the app; no overlay.
+    app: motorTourApp,
+    Overlay: empty,
   },
 }

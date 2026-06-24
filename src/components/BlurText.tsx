@@ -23,7 +23,17 @@ export function BlurText({
 }) {
   const reduce = useReducedMotion()
   const MotionTag = motion[as] as typeof motion.p
-  const words = text.split(' ')
+  // Split into words while tracking which fall inside a **highlighted** run, so
+  // the key takeaway can be coloured without breaking the per-word animation.
+  const words: { text: string; em: boolean }[] = []
+  for (const chunk of text.split(/(\*\*[^*]+\*\*)/g)) {
+    if (!chunk) continue
+    const em = chunk.startsWith('**') && chunk.endsWith('**')
+    const inner = em ? chunk.slice(2, -2) : chunk
+    for (const w of inner.split(' ')) {
+      if (w) words.push({ text: w, em })
+    }
+  }
 
   const container = {
     hidden: {},
@@ -52,9 +62,10 @@ export function BlurText({
         <span key={i}>
           <motion.span
             variants={word}
+            className={w.em ? 'font-medium text-accent' : undefined}
             style={{ display: 'inline-block', willChange: 'transform, filter' }}
           >
-            {w}
+            {w.text}
           </motion.span>
           {i < words.length - 1 ? ' ' : ''}
         </span>

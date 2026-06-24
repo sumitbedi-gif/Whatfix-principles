@@ -1,12 +1,13 @@
 import { useEffect, useState } from 'react'
 import { AnimatePresence, motion } from 'motion/react'
-import { ArrowLeft, Users } from 'lucide-react'
+import { ArrowLeft, Users, BookMarked } from 'lucide-react'
 import type { PactKey, Principle } from '../config'
 import { ScenarioAccordion } from '../components/ScenarioAccordion'
 import { Playground } from '../components/Playground'
 import { PersonaCarousel } from '../components/PersonaCarousel'
 import { PactStickerBoard } from '../components/PactStickerBoard'
 import { ToolOrbit } from '../components/ToolOrbit'
+import { ResourceCards } from '../components/ResourceCards'
 import { PrincipleCover } from './PrincipleCover'
 
 const ease = [0.22, 1, 0.36, 1] as const
@@ -404,10 +405,13 @@ function IntentAccordion({
 function ToolsLayout({ principle }: { principle: Principle }) {
   const intents = principle.intents ?? []
   const tools = principle.tools ?? []
-  // Start neutral (all tools equal); selecting an intent highlights its set.
+  const resources = principle.resources ?? []
+  // Start neutral (all tools equal). An intent id highlights its set; the
+  // sentinel 'resources' swaps the right panel to the resource cards.
   const [activeId, setActiveId] = useState<string | null>(null)
   const activeIntent = intents.find((it) => it.id === activeId)
   const activeTools = activeIntent?.tools ?? []
+  const showResources = activeId === 'resources'
 
   return (
     <div className="flex h-screen flex-col lg:flex-row">
@@ -463,12 +467,59 @@ function ToolsLayout({ principle }: { principle: Principle }) {
             ))}
           </div>
         </div>
+
+        {/* Resources, opens the resource cards on the right */}
+        {resources.length > 0 && (
+          <div className="mt-9 space-y-3 border-t border-grey-200 pt-7">
+            <span className="font-mono text-[11px] uppercase tracking-eyebrow text-grey-400">
+              Resources you should always refer to
+            </span>
+            <div className="pt-1">
+              <button
+                onClick={() =>
+                  setActiveId((cur) => (cur === 'resources' ? null : 'resources'))
+                }
+                className={`flex w-full items-center gap-3 rounded-2xl border px-4 py-3.5 text-left transition-colors duration-200 ${
+                  showResources
+                    ? 'border-grey-300 bg-white shadow-card'
+                    : 'border-grey-200 bg-grey-50 hover:border-grey-300'
+                }`}
+              >
+                <span
+                  className={`grid h-7 w-7 shrink-0 place-items-center rounded-lg transition-colors ${
+                    showResources
+                      ? 'bg-accent text-white'
+                      : 'bg-grey-200 text-grey-500'
+                  }`}
+                >
+                  <BookMarked size={15} strokeWidth={2} />
+                </span>
+                <span className="flex-1">
+                  <span
+                    className={`block text-[13.5px] font-medium tracking-[-0.01em] ${
+                      showResources ? 'text-ink' : 'text-grey-600'
+                    }`}
+                  >
+                    Keep these handy
+                  </span>
+                  <span className="block text-[12px] text-grey-400">
+                    University, Support, Community.
+                  </span>
+                </span>
+              </button>
+            </div>
+          </div>
+        )}
       </div>
 
-      {/* RIGHT, orbiting constellation of Studio tools */}
+      {/* RIGHT, tool orbit or the resource cards */}
       <div className="relative flex flex-1 flex-col bg-white p-5 lg:py-7 lg:pr-7">
         <div className="flex-1 rounded-3xl bg-panel p-6 sm:p-8">
-          <ToolOrbit tools={tools} activeTools={activeTools} />
+          {showResources ? (
+            <ResourceCards resources={resources} />
+          ) : (
+            <ToolOrbit tools={tools} activeTools={activeTools} />
+          )}
         </div>
       </div>
     </div>
