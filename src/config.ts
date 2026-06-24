@@ -20,6 +20,7 @@ export type DemoKind =
   | 'signalText'
   | 'signalBadges'
   | 'smartBeacon'
+  | 'signalLadder'
   | 'contiguityAnchor'
   | 'contiguityContext'
   | 'contiguityTiming'
@@ -49,6 +50,12 @@ export interface Demo {
    * hover, not a reveal.
    */
   alwaysOn?: boolean
+  /**
+   * A segmented control rendered in the dock (instead of toggles), for demos
+   * that step through ordered states. The chosen segment id is exposed to the
+   * demo via the `state` map under this control's `id`.
+   */
+  segmented?: { id: string; options: { id: string; label: string }[] }
 }
 
 /** A run of body copy. `em` segments are signalled (bold + accent). */
@@ -584,6 +591,28 @@ export const CONFIG: Principle[] = [
           kind: 'smartBeacon',
           caption: 'Click the stage: the beacon lights only for non-adopters.',
           toggles: [],
+        },
+      },
+      {
+        id: 'smart-tip-ladder',
+        title: 'Base, good, better',
+        info: [
+          'Signalling isn’t only weight and colour, it’s the words. The same Smart Tip can be vague, specific, or specific and scannable, and only the last one survives a glance.',
+          'Climb the ladder: name the exact things (not “information”), bold the terms the eye should catch, and show an example of what they’ll get. Each rung makes the cue easier to act on.',
+        ],
+        demo: {
+          kind: 'signalLadder',
+          alwaysOn: true,
+          caption: 'Step from Base to Good to Better.',
+          toggles: [],
+          segmented: {
+            id: 'rung',
+            options: [
+              { id: 'base', label: 'Base' },
+              { id: 'good', label: 'Good' },
+              { id: 'better', label: 'Better' },
+            ],
+          },
         },
       },
     ],

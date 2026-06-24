@@ -64,6 +64,8 @@ interface SkeletonAppProps {
    * nudge.
    */
   nudgeTiming?: 'wrong' | 'right' | null
+  /** Latch a Smart Tip to a metric card at the given quality rung. */
+  smartTipRung?: 'base' | 'good' | 'better'
 }
 
 function Bar({ className = '' }: { className?: string }) {
@@ -339,14 +341,14 @@ function TooltipTour({ crisp }: { crisp: boolean }) {
                   </h4>
 
                   {crisp ? (
-                    <p className="mt-1.5 text-[12px] italic leading-relaxed text-grey-400">
+                    <p className="mt-1.5 text-[14px] italic leading-relaxed text-grey-600">
                       Note: {s.note}{' '}
                       <span className="cursor-pointer font-medium not-italic text-accent">
                         (Learn more)
                       </span>
                     </p>
                   ) : (
-                    <p className="mt-1.5 text-[12.5px] leading-relaxed text-grey-500">
+                    <p className="mt-1.5 text-[14px] leading-relaxed text-grey-600">
                       {s.verbose}
                     </p>
                   )}
@@ -482,6 +484,98 @@ function WalkthroughNudge({ onDismiss }: { onDismiss: () => void }) {
   )
 }
 
+/** A tiny faux analytics dashboard, drawn inline (no asset needed). */
+function MiniDashboard() {
+  return (
+    <div className="overflow-hidden rounded-lg ring-1 ring-grey-200/70">
+      <div className="flex h-5 items-center gap-1 bg-[#5b1f2e] px-2">
+        <span className="h-1.5 w-1.5 rounded-full bg-white/50" />
+        <span className="h-1.5 w-1.5 rounded-full bg-white/50" />
+        <span className="ml-2 h-1.5 w-16 rounded bg-white/25" />
+      </div>
+      <div className="flex gap-2 bg-white p-2.5">
+        <div className="flex flex-1 flex-col gap-1.5">
+          <div className="h-1.5 w-12 rounded bg-grey-200" />
+          <div className="flex items-end gap-1">
+            {[40, 70, 30, 90, 55].map((h, i) => (
+              <div
+                key={i}
+                className="w-2 rounded-sm bg-accent/70"
+                style={{ height: `${h * 0.35}px` }}
+              />
+            ))}
+          </div>
+        </div>
+        <div className="grid h-12 w-12 place-items-center">
+          <div className="h-10 w-10 rounded-full border-[3px] border-accent/70 border-r-grey-200" />
+        </div>
+      </div>
+    </div>
+  )
+}
+
+/**
+ * The Base/Good/Better Smart Tip, latched to an info icon on a metric card so
+ * it points at a real element. The rung is chosen from the dock's segmented
+ * control (passed in); this only renders the latched icon + tip.
+ */
+function SmartTipLadder({ rung }: { rung: 'base' | 'good' | 'better' }) {
+  const ease = [0.22, 1, 0.36, 1] as const
+  return (
+    <span className="absolute -right-6 top-1/2 z-30 -translate-y-1/2">
+      <span className="grid h-[18px] w-[18px] place-items-center text-grey-400">
+        <Info size={15} strokeWidth={2} />
+      </span>
+
+      {/* Tip hangs below the icon, offset right with a beak over the icon. */}
+      <div className="absolute left-0 top-full z-40 mt-2.5 w-[290px]">
+        <div className="absolute -top-1.5 left-2 h-3 w-3 rotate-45 rounded-[3px] border-l border-t border-grey-200/60 bg-white" />
+        <div className="relative rounded-xl bg-white p-4 text-left shadow-pop ring-1 ring-grey-200/60">
+          <h4 className="text-[14px] font-semibold tracking-[-0.01em] text-ink">
+            {rung === 'base' ? 'New Accounts tab' : 'New: Accounts tab'}
+          </h4>
+
+          <AnimatePresence>
+            {rung === 'better' && (
+              <motion.div
+                initial={{ opacity: 0, height: 0, marginTop: 0 }}
+                animate={{ opacity: 1, height: 'auto', marginTop: 10 }}
+                exit={{ opacity: 0, height: 0, marginTop: 0 }}
+                transition={{ duration: 0.35, ease }}
+              >
+                <MiniDashboard />
+              </motion.div>
+            )}
+          </AnimatePresence>
+
+          <p className="mt-2.5 text-[12.5px] leading-relaxed text-grey-600">
+            {rung === 'base' ? (
+              'Account-level information can be found in under this new tab.'
+            ) : (
+              <>
+                Find your{' '}
+                <span className="font-semibold text-ink">
+                  account-level files, notes, contacts, and activity
+                </span>{' '}
+                under your new Accounts tab.
+              </>
+            )}
+          </p>
+
+          <div className="mt-3.5 flex items-center gap-2">
+            <span className="rounded-md border border-grey-200 bg-white px-3 py-1.5 text-[12px] font-medium text-grey-600">
+              Close
+            </span>
+            <span className="rounded-md bg-[#1f5fbf] px-3 py-1.5 text-[12px] font-medium text-white">
+              Show me
+            </span>
+          </div>
+        </div>
+      </div>
+    </span>
+  )
+}
+
 export function SkeletonApp({
   dimmed = false,
   badges = [],
@@ -494,6 +588,7 @@ export function SkeletonApp({
   nudgeTiming = null,
   coherentForm = null,
   tooltipTour = null,
+  smartTipRung,
 }: SkeletonAppProps) {
   // Internal tab state for the temporal-contiguity demo.
   const [tab, setTab] = useState(0)
@@ -557,7 +652,11 @@ export function SkeletonApp({
             <>
               <Bar className="h-2 w-12" />
               <Bar className="h-2 w-10" />
-              <Bar className="h-2 w-14" />
+              {/* The Smart Tip ladder latches its info icon to this nav item. */}
+              <span className="relative">
+                <Bar className="h-2 w-14" />
+                {smartTipRung && <SmartTipLadder rung={smartTipRung} />}
+              </span>
             </>
           )}
         </div>

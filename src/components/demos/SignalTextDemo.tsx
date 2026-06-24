@@ -53,7 +53,7 @@ export function SignalTextOverlay({
   state: ToggleState
   onDismiss?: () => void
 }) {
-  const on = state.signal
+  const on = !!state.signal
   return (
     <div className="absolute inset-0 z-20 flex items-center justify-center">
       <motion.div

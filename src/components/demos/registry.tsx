@@ -5,6 +5,7 @@ import { FlowSummonOverlay } from './FlowSummonDemo'
 import { SignalTextOverlay } from './SignalTextDemo'
 import { signalBadgesApp } from './SignalBadgesDemo'
 import { smartBeaconApp } from './SmartBeaconDemo'
+import { smartTipLadderApp } from './SmartTipLadderDemo'
 import {
   contiguityAnchorApp,
   contiguityContextApp,
@@ -25,7 +26,8 @@ import {
 } from './CoherenceDemos'
 import type { Metric } from '../SkeletonApp'
 
-export type ToggleState = Record<string, boolean>
+/** Toggles store booleans; a segmented control stores its chosen option id. */
+export type ToggleState = Record<string, boolean | string>
 
 export interface AppProps {
   dimmed?: boolean
@@ -39,6 +41,7 @@ export interface AppProps {
   nudgeTiming?: 'wrong' | 'right' | null
   coherentForm?: boolean | null
   tooltipTour?: boolean | null
+  smartTipRung?: 'base' | 'good' | 'better'
 }
 
 interface DemoEntry {
@@ -74,6 +77,11 @@ export const DEMOS: Record<DemoKind, DemoEntry> = {
   smartBeacon: {
     // The beacon lives on a metric card inside the app; no overlay.
     app: smartBeaconApp,
+    Overlay: empty,
+  },
+  signalLadder: {
+    // The latched Smart Tip + ladder control live inside the app; no overlay.
+    app: smartTipLadderApp,
     Overlay: empty,
   },
   contiguityAnchor: {

@@ -23,10 +23,14 @@ export function Playground({
   scenarioId: string
   demo: Demo
 }) {
-  const initial = useMemo(
-    () => Object.fromEntries(demo.toggles.map((t) => [t.id, !!t.defaultOn])),
-    [demo],
-  )
+  const initial = useMemo(() => {
+    const base: ToggleState = Object.fromEntries(
+      demo.toggles.map((t) => [t.id, !!t.defaultOn]),
+    )
+    // A segmented control starts on its first option.
+    if (demo.segmented) base[demo.segmented.id] = demo.segmented.options[0].id
+    return base
+  }, [demo])
   const [state, setState] = useState<ToggleState>(initial)
   // `alwaysOn` demos start revealed: their content is present from the off and
   // the interaction is a hover, not a click-to-summon.
@@ -86,7 +90,7 @@ export function Playground({
       {/* Controls dock, a single compact line, right-aligned, so it keeps a
           small vertical footprint and leaves the stage as tall as possible on
           shorter screens. Caption on the left, toggle(s) on the right. */}
-      {(demo.toggles.length > 0 || demo.caption) && (
+      {(demo.toggles.length > 0 || demo.segmented || demo.caption) && (
         <div className="mt-3 flex items-center justify-end gap-4">
           {demo.caption && (
             <p className="hidden flex-1 truncate text-[12px] text-grey-400 sm:block">
@@ -104,6 +108,37 @@ export function Playground({
                   onChange={(on) => setState((s) => ({ ...s, [t.id]: on }))}
                 />
               ))}
+            </div>
+          )}
+          {demo.segmented && (
+            <div className="flex items-center gap-1 rounded-full bg-grey-100 p-1 ring-1 ring-grey-200/60">
+              {demo.segmented.options.map((o) => {
+                const active = state[demo.segmented!.id] === o.id
+                return (
+                  <button
+                    key={o.id}
+                    onClick={() =>
+                      setState((s) => ({ ...s, [demo.segmented!.id]: o.id }))
+                    }
+                    className={`relative rounded-full px-4 py-1.5 text-[13px] font-medium transition-colors ${
+                      active ? 'text-white' : 'text-grey-500 hover:text-ink'
+                    }`}
+                  >
+                    {active && (
+                      <motion.span
+                        layoutId="seg-pill"
+                        className="absolute inset-0 rounded-full bg-ink"
+                        transition={{
+                          type: 'spring',
+                          stiffness: 420,
+                          damping: 34,
+                        }}
+                      />
+                    )}
+                    <span className="relative">{o.label}</span>
+                  </button>
+                )
+              })}
             </div>
           )}
         </div>
