@@ -933,7 +933,7 @@ export const CONFIG: Principle[] = [
     day: 2,
     label: 'Jakob’s Law',
     summary: 'Users arrive expecting yours to work like every product they already know.',
-    status: 'soon',
+    status: 'live',
     cover:
       'Users spend almost all their time in other products, so **they arrive expecting yours to behave like the ones they already know.** Their mental model is pre-built, and fighting it costs you.',
     intro: [
@@ -997,7 +997,7 @@ export const CONFIG: Principle[] = [
     day: 2,
     label: 'Reduce the motor load',
     summary: 'Every click, keystroke, and pointer journey is a tax. Charge less of it.',
-    status: 'soon',
+    status: 'live',
     cover:
       '**Every click is an interaction cost.** Every movement is an interaction cost. The fewer steps between the user and the outcome, the better the guidance.',
     intro: [
@@ -1063,7 +1063,7 @@ export const CONFIG: Principle[] = [
     day: 2,
     label: 'Error prevention > Error messages',
     summary: 'The cheapest error to fix is the one that never happens.',
-    status: 'soon',
+    status: 'live',
     cover:
       'The usual instinct is to explain an error after it happens. The principle says **intercept it before.** The cheapest error to fix is the one that never happens at all.',
     intro: [
@@ -1127,7 +1127,7 @@ export const CONFIG: Principle[] = [
     day: 2,
     label: 'Segmentation',
     summary: 'Break the journey into chunks the user can actually hold.',
-    status: 'soon',
+    status: 'live',
     cover:
       'Segmentation is **chunking.** Break a long, continuous stream into learner-paced pieces, because the back half of an unbroken sequence simply washes out.',
     intro: [
@@ -1177,7 +1177,7 @@ export const CONFIG: Principle[] = [
     day: 2,
     label: 'Autonomy',
     summary: 'Hand the user the wheel: whether, what, and how much help they get.',
-    status: 'soon',
+    status: 'live',
     cover:
       'Force guidance on someone who didn’t ask, especially an expert, and you signal “I don’t trust you.” **Hand the user the wheel** instead, and a path they chose is one they’ll actually follow.',
     intro: [
@@ -1241,7 +1241,7 @@ export const CONFIG: Principle[] = [
     day: 2,
     label: 'Exclusivity',
     summary: 'An ask aimed at everyone is aimed at no one. Make it personal.',
-    status: 'soon',
+    status: 'live',
     cover:
       'A generic blast aimed at “everyone” is aimed at no one. **Targeting beats broadcasting:** the same ask, framed as personal and selective, clears the filter that screens out noise.',
     intro: [
@@ -1291,7 +1291,7 @@ export const CONFIG: Principle[] = [
     day: 2,
     label: 'Multimedia & modality',
     summary: 'The same answer in the wrong format fails. Match channel to question.',
-    status: 'soon',
+    status: 'live',
     cover:
       'The channel you deliver an answer through changes how well it lands. **The same answer in the wrong format fails:** match the modality to the question, the moment, and the user.',
     intro: [
