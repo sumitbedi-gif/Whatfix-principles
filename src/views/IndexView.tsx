@@ -1,26 +1,13 @@
-import { useState } from 'react'
 import { motion } from 'motion/react'
 import { ArrowUpRight } from 'lucide-react'
 import { CONFIG, type Principle } from '../config'
 import { BrandMark } from '../components/BrandMark'
 
 export function IndexView() {
-  // Persist the selected day so returning from a principle lands on the same
-  // day's list instead of resetting to Day 1.
-  const [day, setDay] = useState<1 | 2>(() =>
-    typeof sessionStorage !== 'undefined' && sessionStorage.getItem('day') === '2'
-      ? 2
-      : 1,
-  )
-  const selectDay = (d: 1 | 2) => {
-    setDay(d)
-    if (typeof sessionStorage !== 'undefined') sessionStorage.setItem('day', String(d))
-  }
-  const principles = CONFIG.filter((p) => (p.day ?? 1) === day)
+  // The workshop is over, so every principle now lives in one combined list.
+  const principles = CONFIG
   return (
     <div className="mx-auto w-full max-w-2xl px-6">
-      <DayToggle day={day} onChange={selectDay} />
-
       <header className="flex justify-center pt-9">
         <a href="#/" aria-label="Whatfix home" className="inline-block">
           <BrandMark className="h-7 w-auto" />
@@ -51,58 +38,11 @@ export function IndexView() {
       </div>
 
       {/* Principle list */}
-      <ul key={day} className="mt-20 pb-28 sm:mt-24">
+      <ul className="mt-20 pb-28 sm:mt-24">
         {principles.map((p, i) => (
           <PrincipleRow key={p.id} principle={p} index={i} />
         ))}
       </ul>
-    </div>
-  )
-}
-
-/**
- * A minimal, Apple-style segmented toggle pinned to the top-right corner.
- * Both days are selectable; the white pill glides between them via a shared
- * layoutId. Day 2's principles are all still "soon", so a quiet caption notes
- * that when Day 2 is active.
- */
-function DayToggle({
-  day,
-  onChange,
-}: {
-  day: 1 | 2
-  onChange: (d: 1 | 2) => void
-}) {
-  return (
-    <div className="fixed right-6 top-6 z-50 flex flex-col items-end gap-1.5">
-      <div className="relative flex items-center rounded-full bg-grey-100/90 p-1 backdrop-blur">
-        {([1, 2] as const).map((d) => (
-          <button
-            key={d}
-            onClick={() => onChange(d)}
-            className={`relative z-10 rounded-full px-4 py-1.5 text-[12.5px] font-medium transition-colors ${
-              day === d ? 'text-ink' : 'text-grey-400 hover:text-grey-600'
-            }`}
-          >
-            {day === d && (
-              <motion.span
-                layoutId="day-pill"
-                className="absolute inset-0 -z-10 rounded-full bg-white shadow-[0_1px_3px_rgba(0,0,0,0.08)]"
-                transition={{ type: 'spring', stiffness: 500, damping: 38 }}
-              />
-            )}
-            Day {d}
-          </button>
-        ))}
-      </div>
-      <motion.span
-        initial={false}
-        animate={{ opacity: day === 2 ? 1 : 0, y: day === 2 ? 0 : -3 }}
-        transition={{ duration: 0.18, ease: [0.22, 1, 0.36, 1] }}
-        className="pr-1 text-[11px] text-grey-400"
-      >
-        Coming soon
-      </motion.span>
     </div>
   )
 }
