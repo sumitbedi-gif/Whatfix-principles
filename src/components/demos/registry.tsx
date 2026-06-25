@@ -39,6 +39,28 @@ import {
   motorAutofillApp,
   motorTourApp,
 } from './MotorDemos'
+import {
+  errorValidateApp,
+  errorBlockerApp,
+  errorDeflectApp,
+} from './ErrorDemos'
+import {
+  segmentTasksApp,
+  segmentStepsApp,
+} from './SegmentDemos'
+import {
+  autonomyChoiceApp,
+  autonomyBranchApp,
+  autonomyDetectApp,
+} from './AutonomyDemos'
+import {
+  exclusivitySurveyApp,
+  exclusivityWelcomeApp,
+} from './ExclusivityDemos'
+import {
+  modalityQuickReadApp,
+  modalityMultiApp,
+} from './ModalityDemos'
 import type { Metric } from '../SkeletonApp'
 
 /** Toggles store booleans; a segmented control stores its chosen option id. */
@@ -66,6 +88,18 @@ export interface AppProps {
   motorFlow?: boolean | null
   motorAutofill?: boolean | null
   motorTour?: boolean | null
+  errorValidate?: boolean | null
+  errorBlocker?: boolean | null
+  errorDeflect?: boolean | null
+  segmentTasks?: boolean | null
+  segmentSteps?: boolean | null
+  autonomyChoice?: boolean | null
+  autonomyBranch?: boolean | null
+  autonomyDetect?: boolean | null
+  exclusivitySurvey?: boolean | null
+  exclusivityWelcome?: boolean | null
+  modalityQuickRead?: boolean | null
+  modalityMulti?: boolean | null
 }
 
 interface DemoEntry {
@@ -190,6 +224,66 @@ export const DEMOS: Record<DemoKind, DemoEntry> = {
   motorTour: {
     // The keyboard-driven tour lives inside the app; no overlay.
     app: motorTourApp,
+    Overlay: empty,
+  },
+  errorValidate: {
+    // The 3-page form + validation live inside the app; no overlay.
+    app: errorValidateApp,
+    Overlay: empty,
+  },
+  errorBlocker: {
+    // The announcement form + blocker live inside the app; no overlay.
+    app: errorBlockerApp,
+    Overlay: empty,
+  },
+  errorDeflect: {
+    // The ticket page + deflection blocker live inside the app; no overlay.
+    app: errorDeflectApp,
+    Overlay: empty,
+  },
+  segmentTasks: {
+    // The task-list widget lives inside the app; no overlay.
+    app: segmentTasksApp,
+    Overlay: empty,
+  },
+  segmentSteps: {
+    // The chunked tour lives inside the app; no overlay.
+    app: segmentStepsApp,
+    Overlay: empty,
+  },
+  autonomyChoice: {
+    // The choice pop-up + flow live inside the app; no overlay.
+    app: autonomyChoiceApp,
+    Overlay: empty,
+  },
+  autonomyBranch: {
+    // The branched form lives inside the app; no overlay.
+    app: autonomyBranchApp,
+    Overlay: empty,
+  },
+  autonomyDetect: {
+    // The profile-switch skeleton lives inside the app; no overlay.
+    app: autonomyDetectApp,
+    Overlay: empty,
+  },
+  exclusivitySurvey: {
+    // The survey pop-up lives inside the app; no overlay.
+    app: exclusivitySurveyApp,
+    Overlay: empty,
+  },
+  exclusivityWelcome: {
+    // The welcome pop-up lives inside the app; no overlay.
+    app: exclusivityWelcomeApp,
+    Overlay: empty,
+  },
+  modalityQuickRead: {
+    // The Self-Help quick-answer lives inside the app; no overlay.
+    app: modalityQuickReadApp,
+    Overlay: empty,
+  },
+  modalityMulti: {
+    // The multi-format Self-Help lives inside the app; no overlay.
+    app: modalityMultiApp,
     Overlay: empty,
   },
 }

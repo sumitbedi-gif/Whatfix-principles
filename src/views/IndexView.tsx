@@ -5,11 +5,21 @@ import { CONFIG, type Principle } from '../config'
 import { BrandMark } from '../components/BrandMark'
 
 export function IndexView() {
-  const [day, setDay] = useState<1 | 2>(1)
+  // Persist the selected day so returning from a principle lands on the same
+  // day's list instead of resetting to Day 1.
+  const [day, setDay] = useState<1 | 2>(() =>
+    typeof sessionStorage !== 'undefined' && sessionStorage.getItem('day') === '2'
+      ? 2
+      : 1,
+  )
+  const selectDay = (d: 1 | 2) => {
+    setDay(d)
+    if (typeof sessionStorage !== 'undefined') sessionStorage.setItem('day', String(d))
+  }
   const principles = CONFIG.filter((p) => (p.day ?? 1) === day)
   return (
     <div className="mx-auto w-full max-w-2xl px-6">
-      <DayToggle day={day} onChange={setDay} />
+      <DayToggle day={day} onChange={selectDay} />
 
       <header className="flex justify-center pt-9">
         <a href="#/" aria-label="Whatfix home" className="inline-block">

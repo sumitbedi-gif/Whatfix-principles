@@ -52,8 +52,12 @@ export function Playground({
 
   return (
     <div className="flex h-full flex-col">
-      {/* Stage, full app fills it, demo reveals on click */}
-      <div className="relative flex-1 overflow-hidden rounded-3xl bg-panel p-6 sm:p-8">
+      {/* Stage, full app fills it, demo reveals on click. The id lets in-app
+          pop-ups portal here so they centre on the playground canvas. */}
+      <div
+        id="playground-stage"
+        className="relative flex-1 overflow-hidden rounded-3xl bg-panel p-6 sm:p-8"
+      >
         <AnimatePresence mode="wait">
           <motion.div
             key={scenarioId}

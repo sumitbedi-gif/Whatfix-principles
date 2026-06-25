@@ -39,6 +39,18 @@ export type DemoKind =
   | 'motorFlow'
   | 'motorAutofill'
   | 'motorTour'
+  | 'errorValidate'
+  | 'errorBlocker'
+  | 'errorDeflect'
+  | 'segmentTasks'
+  | 'segmentSteps'
+  | 'autonomyChoice'
+  | 'autonomyBranch'
+  | 'autonomyDetect'
+  | 'exclusivitySurvey'
+  | 'exclusivityWelcome'
+  | 'modalityQuickRead'
+  | 'modalityMulti'
 
 export interface Toggle {
   id: string
@@ -918,8 +930,6 @@ export const CONFIG: Principle[] = [
   {
     id: 'match-their-model',
     ordinal: '09',
-    // Moved to Day 2 (not covered on Day 1). Content is intact below; to bring
-    // it back to Day 1, set day: 1 and status: 'live'.
     day: 2,
     label: 'Jakob’s Law',
     summary: 'Users arrive expecting yours to work like every product they already know.',
@@ -984,8 +994,6 @@ export const CONFIG: Principle[] = [
   {
     id: 'reduce-motor-load',
     ordinal: '10',
-    // Moved to Day 2 (not covered on Day 1). Content is intact below; to bring
-    // it back to Day 1, set day: 1 and status: 'live'.
     day: 2,
     label: 'Reduce the motor load',
     summary: 'Every click, keystroke, and pointer journey is a tax. Charge less of it.',
@@ -1053,40 +1061,278 @@ export const CONFIG: Principle[] = [
     id: 'error-prevention',
     ordinal: '11',
     day: 2,
-    label: 'Error prevention',
-    summary: 'Stop the mistake before it happens, not after.',
+    label: 'Error prevention > Error messages',
+    summary: 'The cheapest error to fix is the one that never happens.',
     status: 'soon',
+    cover:
+      'The usual instinct is to explain an error after it happens. The principle says **intercept it before.** The cheapest error to fix is the one that never happens at all.',
+    intro: [
+      'Nielsen ranks “error prevention” above even the best error message, and poka-yoke (Shingo’s mistake-proofing) says the same: design the failure out at the source instead of catching it downstream. Prevention is cheap; correction is expensive and erodes trust.',
+      'There’s a timing rule inside it: catch the problem at the point of entry, not at the final submit, because a late error forces the user to retrace everything. The strongest form removes the wrong choice entirely, so the mistake simply can’t be made.',
+    ],
+    scenarios: [
+      {
+        id: 'validate-at-source',
+        title: 'Catch it at entry, not at submit',
+        info: [
+          'A 3-page form. The phone field accepts anything, and the format error only surfaces when you hit Submit on the last page, so you have to go back and fix it after filling everything.',
+          'Toggle Better approach and a Smart Tip validates the field as you type, with Next blocked until it’s right. The error never reaches submit, and the form is first-time-right.',
+        ],
+        demo: {
+          kind: 'errorValidate',
+          alwaysOn: true,
+          caption: 'Fill the phone field; toggle to validate as you type instead of at submit.',
+          toggles: [{ id: 'better', label: 'Better approach', defaultOn: false }],
+        },
+      },
+      {
+        id: 'block-the-catastrophe',
+        title: 'Make the catastrophe impossible',
+        info: [
+          'A single Send button with a huge blast radius: one click messages ~40,000 people, and there’s no undo. For an irreversible action, no error message after the fact is good enough.',
+          'Toggle Better approach and a blocker intercepts the click the instant it’s attempted, holding the action until the audience is reviewed. The mistake is designed out, not just discouraged.',
+        ],
+        demo: {
+          kind: 'errorBlocker',
+          alwaysOn: true,
+          caption: 'Hit Send; toggle to intercept the catastrophic action with a blocker.',
+          toggles: [{ id: 'better', label: 'Better approach', defaultOn: false }],
+        },
+      },
+      {
+        id: 'deflect-the-ticket',
+        title: 'Intercept only at the costly step',
+        info: [
+          'A support-ticket page. Choose “Password reset”, hit Submit, and a ticket is created, a ticket a self-serve flow could have handled. The cost shows up downstream as rework.',
+          'Toggle Better approach and a blocker tooltip intercepts only at this decision point, offering to run the password flow instead. One decisive intercept where the expensive mistake happens, silent everywhere else.',
+        ],
+        demo: {
+          kind: 'errorDeflect',
+          alwaysOn: true,
+          caption: 'Submit a password ticket; toggle to deflect it to self-serve.',
+          toggles: [{ id: 'better', label: 'Better approach', defaultOn: false }],
+        },
+      },
+    ],
+    proof: {
+      source: 'Alumni-engagement foundation',
+      body: 'Event managers kept hitting “Create New List” and accidentally pulling the entire 400,000-person database; one incident blasted 40,000 people with the wrong invite, triggering a multi-team crisis. A blocker on those buttons exited the form before any data loaded and redirected to the right workflow, making the full-database pull impossible, with no backend change.',
+      metric: '40,000',
+      metricLabel: 'wrong-audience sends, designed out at the source',
+    },
   },
   {
     id: 'segmentation',
     ordinal: '12',
     day: 2,
     label: 'Segmentation',
-    summary: 'The right guidance for the right group, not one size for all.',
+    summary: 'Break the journey into chunks the user can actually hold.',
     status: 'soon',
+    cover:
+      'Segmentation is **chunking.** Break a long, continuous stream into learner-paced pieces, because the back half of an unbroken sequence simply washes out.',
+    intro: [
+      'Mayer’s segmenting principle: user-paced segments reliably beat one continuous stream. The reason is cognitive load, working memory holds only about four things at once (Cowan), so a long undivided sequence overruns it and the rest is lost.',
+      'Chunking lets the brain process, consolidate, and breathe between segments. The job is to find the natural seams and let the user pace through them, instead of dumping everything at once.',
+    ],
+    scenarios: [
+      {
+        id: 'segmented-tasklist',
+        title: 'A scattered list, or a paced journey',
+        info: [
+          'A task list that dumps every onboarding step into one flat scroll. No order, no grouping, no sense of progress, it reads as one overwhelming wall.',
+          'Toggle Better approach and the same tasks are chunked into Day 1 to Day 4 stages, each a small cluster with its own progress. The same twelve tasks now read as “four small things”, and the user always knows where they are.',
+        ],
+        demo: {
+          kind: 'segmentTasks',
+          alwaysOn: true,
+          caption: 'Open the task list; toggle to chunk it into paced stages.',
+          toggles: [{ id: 'better', label: 'Better approach', defaultOn: false }],
+        },
+      },
+      {
+        id: 'chunked-flow',
+        title: 'The 40-step march, or a breakpoint',
+        info: [
+          'A 40-step walk-through: Next, Next, Next, with no pause and no end in sight. By step fifteen the user has lost the thread, and there’s nowhere to stop and resume.',
+          'Toggle Better approach and the flow is broken into segments. After the first chunk a checkpoint appears, “Nice, setup is done. Continue, or pick this up later?”, so the user consolidates, feels progress, and can resume without starting over.',
+        ],
+        demo: {
+          kind: 'segmentSteps',
+          alwaysOn: true,
+          caption: 'Click Next through the march; toggle to chunk it with a checkpoint.',
+          toggles: [{ id: 'better', label: 'Better approach', defaultOn: false }],
+        },
+      },
+    ],
+    proof: {
+      source: 'Fintech onboarding',
+      body: 'Customer success was burning roughly 2 hours per onboarding, about 70 to 80 hours a month, walking every new user through manually. A task list, chunked into paced stages and shown only to the right cohort, bundled the required flows into a sequence users completed themselves, cutting the team out of the repetitive walkthrough.',
+      metric: '~70-80 hrs',
+      metricLabel: 'of CSM time saved per month',
+    },
   },
   {
     id: 'autonomy',
     ordinal: '13',
     day: 2,
     label: 'Autonomy',
-    summary: 'Help that respects the user’s control, never hijacks it.',
+    summary: 'Hand the user the wheel: whether, what, and how much help they get.',
     status: 'soon',
+    cover:
+      'Force guidance on someone who didn’t ask, especially an expert, and you signal “I don’t trust you.” **Hand the user the wheel** instead, and a path they chose is one they’ll actually follow.',
+    intro: [
+      'Self-Determination Theory (Deci & Ryan): intrinsic motivation rests on autonomy (I chose this) and competence (I can do this). Guidance forced on a user violates both, and they disengage from all of your content, not just this one.',
+      'The expertise-reversal effect adds the corollary: help that aids a novice actively harms an expert. So the safest way to serve both is to let the user self-select, whether they want help, what they learn, and how much, rather than guessing for them.',
+    ],
+    scenarios: [
+      {
+        id: 'choose-the-path',
+        title: 'Auto-run, or let them choose',
+        info: [
+          'The moment the user lands, a walk-through just starts. No consent, no choice, the same forced path for everyone, whether they need it or not.',
+          'Toggle Better approach and a pop-up offers the choice first: Process A, Process B, or “I’ll explore on my own.” The user picks, and the chosen flow launches from there. Autonomy at the entry point.',
+        ],
+        demo: {
+          kind: 'autonomyChoice',
+          alwaysOn: true,
+          caption: 'Watch the flow auto-run; toggle to offer the choice first.',
+          toggles: [{ id: 'better', label: 'Better approach', defaultOn: false }],
+        },
+      },
+      {
+        id: 'branch-on-state',
+        title: 'Walk every step, or branch',
+        info: [
+          'A two-section form where Section A is already filled. The linear flow walks every field anyway, telling the user to “fill this” on a field that’s already done. It insults the expert and wastes their time.',
+          'Toggle Better approach and the flow branches on state: it sees Section A is satisfied and skips straight to Section B. Adapt to what the user has actually done, instead of assuming zero knowledge.',
+        ],
+        demo: {
+          kind: 'autonomyBranch',
+          alwaysOn: true,
+          caption: 'Step through the flow; toggle to branch past the finished section.',
+          toggles: [{ id: 'better', label: 'Better approach', defaultOn: false }],
+        },
+      },
+      {
+        id: 'detect-the-veteran',
+        title: 'Detect the veteran, step back',
+        info: [
+          'A workspace with a hand-holding task list (bottom-left) and Self-Help (bottom-right). The task list is right for a newcomer, but a power user finds it noise: heavy guidance reads as “I don’t trust you to know.”',
+          'Click the profile, top-right, to switch to a veteran. The task list quietly disappears, and the quiet Self-Help stays one click away if they want it. No toggle here: the experience adapts to who the user is.',
+        ],
+        demo: {
+          kind: 'autonomyDetect',
+          alwaysOn: true,
+          caption: 'Click the profile (top-right) to switch users and watch the guidance adapt.',
+          toggles: [],
+        },
+      },
+    ],
+    proof: {
+      source: 'Automotive contract-management tool',
+      body: 'The training sandbox was lost, so people had to onboard directly in production. A persona-gateway pop-up let users self-select their experience level and routed each accordingly: new users learned safely via guided flows, while veterans kept working uninterrupted with light-touch help. The team specifically praised separating new from existing users to avoid unnecessary disruption.',
+      metric: '977',
+      metricLabel: 'users routed to the right path (70 guided, 813 left to work)',
+    },
   },
   {
     id: 'exclusivity',
     ordinal: '14',
     day: 2,
     label: 'Exclusivity',
-    summary: 'One thing at a time, so nothing competes for the moment.',
+    summary: 'An ask aimed at everyone is aimed at no one. Make it personal.',
     status: 'soon',
+    cover:
+      'A generic blast aimed at “everyone” is aimed at no one. **Targeting beats broadcasting:** the same ask, framed as personal and selective, clears the filter that screens out noise.',
+    intro: [
+      'Cialdini’s principles of influence: people act when an ask feels personally directed, scarcity (“a selected few”), social proof (“people like you did this”), and self-relevance. The brain filters generic appeals as noise, but a personally-addressed one gets through.',
+      'For an author, that means the lift is often in the framing, not the offer. “You, specifically, were chosen” converts where “we’d love your feedback” is ignored. Same survey, same moment, different result.',
+    ],
+    scenarios: [
+      {
+        id: 'selected-survey',
+        title: 'A blast, or “you were selected”',
+        info: [
+          'A feedback survey delivered as a generic notice: “We’d love your feedback, take our survey.” Shown to everyone, filtered out as noise by almost everyone.',
+          'Toggle Better approach and the same survey is reframed with exclusivity and self-relevance: “You’ve been specifically selected, your input shapes what we build next.” The ask is identical; the framing is the whole lift.',
+        ],
+        demo: {
+          kind: 'exclusivitySurvey',
+          alwaysOn: true,
+          caption: 'Toggle to reframe the same survey as a personal, selective ask.',
+          toggles: [{ id: 'better', label: 'Better approach', defaultOn: false }],
+        },
+      },
+      {
+        id: 'personalized-welcome',
+        title: 'Generic, or addressed to you',
+        info: [
+          'A welcome pop-up that greets everyone the same way: “Welcome to the dashboard.” Polite, and instantly forgettable.',
+          'Toggle Better approach and the greeting pulls the user’s name from a variable: “Hey Sumit, welcome back.” A message addressed to you reads as meant for you, and self-relevance is what clears the filter.',
+        ],
+        demo: {
+          kind: 'exclusivityWelcome',
+          alwaysOn: true,
+          caption: 'Toggle to personalise the welcome with the user’s name.',
+          toggles: [{ id: 'better', label: 'Better approach', defaultOn: false }],
+        },
+      },
+    ],
+    proof: {
+      source: 'Pharma in-app feedback',
+      body: 'A feedback survey shared as a static in-app text link drew 11 responses in 5 days. Replaced with a proactive, targeted pop-up at login (capped at two views) with the survey embedded inline, it drove a 5x increase in responses, purely by making the ask visible and personally directed instead of passive.',
+      metric: '5x',
+      metricLabel: 'more responses, from the same survey',
+    },
   },
   {
-    id: 'spaced-reminders',
+    id: 'multimedia-modality',
     ordinal: '15',
     day: 2,
-    label: 'Spaced reminders',
-    summary: 'Time the nudge so it lands, instead of repeating until ignored.',
+    label: 'Multimedia & modality',
+    summary: 'The same answer in the wrong format fails. Match channel to question.',
     status: 'soon',
+    cover:
+      'The channel you deliver an answer through changes how well it lands. **The same answer in the wrong format fails:** match the modality to the question, the moment, and the user.',
+    intro: [
+      'Mayer’s modality principle: for complex material, narration over a visual beats a wall of on-screen text, the spoken and visual channels share the load instead of overloading one. The effect is strongest exactly when the content is hard.',
+      'The author’s translation is a decision rule. A flow is right for “walk me through it now”, a video for “show me how it works”, an article for “let me scan and reference”, and a quick answer for “just tell me one fact.” Pick the channel the brain can absorb in that moment.',
+    ],
+    scenarios: [
+      {
+        id: 'quick-answer',
+        title: 'Make them work, or just answer',
+        info: [
+          'A user needs one fact, “how many leaves do I have left?”, and Self-Help hands back flows to run. A heavy modality for a light question: they just wanted a number.',
+          'Toggle Better approach and the same search answers inline: a quick-answer card thinks for a beat, then types out “You have 34 leaves left.” The flows stay below for when you actually want to act. The lightest modality that fits the need.',
+        ],
+        demo: {
+          kind: 'modalityQuickRead',
+          alwaysOn: true,
+          caption: 'Open Self-Help; toggle to answer the fact inline instead of launching a flow.',
+          toggles: [{ id: 'better', label: 'Better approach', defaultOn: false }],
+        },
+      },
+      {
+        id: 'pick-your-format',
+        title: 'One format, or let them pick',
+        info: [
+          'A user searches “how do I file a support ticket?” and gets a single article, a wall of text. Right for some, wrong for the person who’d rather watch or be walked through it.',
+          'Toggle Better approach and Self-Help returns the same topic in three modalities, an article to scan, a flow to be walked through live, and a narrated video to watch, and the user picks the channel that fits their moment.',
+        ],
+        demo: {
+          kind: 'modalityMulti',
+          alwaysOn: true,
+          caption: 'Open Self-Help; toggle to offer the answer as article, flow, and video.',
+          toggles: [{ id: 'better', label: 'Better approach', defaultOn: false }],
+        },
+      },
+    ],
+    proof: {
+      source: 'Consulting CRM support',
+      body: 'A team fielded around 10 repetitive “how to dedupe a record” questions a week, roughly 10 minutes each. Turning the guide into searchable Self-Help that summarized the steps inline when users searched “deduplication”, the lightest modality for the question, cut those queries about 75% and saved roughly 70 to 80 minutes a week.',
+      metric: '~75%',
+      metricLabel: 'fewer repetitive questions',
+    },
   },
 ]
