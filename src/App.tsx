@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react'
 import { AnimatePresence, motion } from 'motion/react'
+import { Analytics } from '@vercel/analytics/react'
 import { CONFIG } from './config'
 import { IndexView } from './views/IndexView'
 import { DetailView } from './views/DetailView'
@@ -54,6 +55,7 @@ function App() {
           </motion.div>
         )}
       </AnimatePresence>
+      <Analytics />
     </div>
   )
 }

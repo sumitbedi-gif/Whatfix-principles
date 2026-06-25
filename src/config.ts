@@ -918,9 +918,12 @@ export const CONFIG: Principle[] = [
   {
     id: 'match-their-model',
     ordinal: '09',
+    // Moved to Day 2 (not covered on Day 1). Content is intact below; to bring
+    // it back to Day 1, set day: 1 and status: 'live'.
+    day: 2,
     label: 'Jakob’s Law',
     summary: 'Users arrive expecting yours to work like every product they already know.',
-    status: 'live',
+    status: 'soon',
     cover:
       'Users spend almost all their time in other products, so **they arrive expecting yours to behave like the ones they already know.** Their mental model is pre-built, and fighting it costs you.',
     intro: [
@@ -981,9 +984,12 @@ export const CONFIG: Principle[] = [
   {
     id: 'reduce-motor-load',
     ordinal: '10',
+    // Moved to Day 2 (not covered on Day 1). Content is intact below; to bring
+    // it back to Day 1, set day: 1 and status: 'live'.
+    day: 2,
     label: 'Reduce the motor load',
     summary: 'Every click, keystroke, and pointer journey is a tax. Charge less of it.',
-    status: 'live',
+    status: 'soon',
     cover:
       '**Every click is an interaction cost.** Every movement is an interaction cost. The fewer steps between the user and the outcome, the better the guidance.',
     intro: [
