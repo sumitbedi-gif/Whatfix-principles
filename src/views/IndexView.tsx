@@ -684,7 +684,7 @@ const QUIZ: QuizBoard[] = [
     law: 'Contiguity',
     kicker: 'The explanation belongs beside the thing it explains.',
     a: (
-      <Shot>
+      <div className="relative h-[300px] overflow-hidden rounded-[6px] border border-spread-ink/10 bg-[#f2ece0]">
         <ImgOr
           src="/quiz/ikea-a.png"
           alt="Assembly sheet: numbered parts, legend at the bottom of the page"
@@ -697,10 +697,10 @@ const QUIZ: QuizBoard[] = [
             </div>
           }
         />
-      </Shot>
+      </div>
     ),
     b: (
-      <Shot>
+      <div className="relative h-[300px] overflow-hidden rounded-[6px] border border-spread-ink/10 bg-[#f2ece0]">
         <ImgOr
           src="/quiz/ikea-b.png"
           alt="Assembly sheet: labels sit directly on the parts"
@@ -710,7 +710,7 @@ const QUIZ: QuizBoard[] = [
             </div>
           }
         />
-      </Shot>
+      </div>
     ),
   },
   {
