@@ -29,10 +29,21 @@ export default {
         },
         good: '#2f9e6b',
         bad: '#d6453d',
+        // The dark print-spread landing page ("stage" look).
+        spread: {
+          bg: '#272621',
+          paper: '#eae3d3',
+          tan: '#c9b795',
+          ink: '#1d1c17',
+          orange: '#eb5b2d',
+          orangedeep: '#c74a22',
+          faint: 'rgba(234,227,211,0.05)',
+        },
       },
       fontFamily: {
         sans: ['Inter', 'ui-sans-serif', 'system-ui', 'sans-serif'],
         display: ['Fraunces', 'Georgia', 'ui-serif', 'serif'],
+        grotesk: ['Archivo', 'Inter', 'ui-sans-serif', 'sans-serif'],
         mono: ['"Geist Mono"', 'ui-monospace', 'monospace'],
       },
       boxShadow: {
