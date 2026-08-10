@@ -34,7 +34,7 @@ function App() {
   // returns to the same mode it was opened from, whatever the back link says.
   const mode = principle
     ? 'grid'
-    : id === 'timeline' || id === 'deck'
+    : id === 'timeline' || id === 'deck' || id === 'quiz'
       ? id
       : readViewMode()
 
@@ -87,7 +87,7 @@ function App() {
         setBlackout((v) => {
           if (v) return false
           const id = window.location.hash.replace(/^#\/?/, '')
-          if (id && id !== 'timeline' && id !== 'deck') {
+          if (id && id !== 'timeline' && id !== 'deck' && id !== 'quiz') {
             window.location.hash = '#/'
           }
           return v

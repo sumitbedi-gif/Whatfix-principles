@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from 'react'
+import { useEffect, useRef, useState, type ReactNode } from 'react'
 import { AnimatePresence, motion, useReducedMotion } from 'motion/react'
 import { CONFIG, type Principle } from '../config'
 import { PrincipleGlyph } from '../components/PrincipleGlyphs'
@@ -49,13 +49,13 @@ function CropMarks() {
   )
 }
 
-type ViewMode = 'grid' | 'timeline' | 'deck'
+type ViewMode = 'grid' | 'timeline' | 'deck' | 'quiz'
 
 /** Whisper-quiet mode switch, the only chrome any view carries. */
 function ModeSwitch({ active }: { active: ViewMode }) {
   return (
     <div className="flex items-center justify-end gap-5 px-6 pt-5 text-spread-paper">
-      {(['grid', 'timeline', 'deck'] as ViewMode[]).map((m) => (
+      {(['quiz', 'grid', 'timeline', 'deck'] as ViewMode[]).map((m) => (
         <a
           key={m}
           href={m === 'grid' ? '#/' : `#/${m}`}
@@ -488,6 +488,432 @@ function DeckView({ reduceMotion }: { reduceMotion: boolean }) {
   )
 }
 
+/* ── Quiz mode ──────────────────────────────────────────────────────────────
+ * The post-lunch opener: six A/B situations the room votes on (Mentimeter or
+ * hands) before any principle is named. Each board hides a reveal chip naming
+ * the law, shown on the presenter's Enter. ←/→ move between situations.
+ */
+
+/** A small white app canvas the mockups live on. */
+function Shot({ children }: { children: ReactNode }) {
+  return (
+    <div className="relative h-[250px] overflow-hidden rounded-[6px] border border-spread-ink/10 bg-white p-4">
+      {children}
+    </div>
+  )
+}
+
+/** Grey skeleton bar. */
+function Sk({ w, h = 9, className = '' }: { w: number | string; h?: number; className?: string }) {
+  return (
+    <div
+      className={`rounded-[3px] bg-[#e2ddd1] ${className}`}
+      style={{ width: w, height: h }}
+    />
+  )
+}
+
+/** A wordless form with one focused field: the user is mid-task. */
+function SkForm() {
+  return (
+    <div className="flex h-full flex-col gap-3">
+      <Sk w={110} h={12} />
+      <div className="mt-1 flex flex-col gap-2.5">
+        <div className="rounded-[5px] border border-[#e2ddd1] p-2.5">
+          <Sk w={140} h={7} />
+        </div>
+        <div className="rounded-[5px] border-2 border-spread-orangeplate p-2.5">
+          <Sk w={90} h={7} className="bg-[#efe9db]" />
+        </div>
+        <div className="rounded-[5px] border border-[#e2ddd1] p-2.5">
+          <Sk w={120} h={7} />
+        </div>
+      </div>
+    </div>
+  )
+}
+
+const NOTICE = {
+  pre: 'Scheduled maintenance this weekend. Reports will be ',
+  em1: 'unavailable Saturday',
+  mid: ' 02:00–06:00. Export anything you need ',
+  em2: 'before Friday evening',
+  post: '. Questions go to the support desk.',
+}
+
+interface QuizBoard {
+  prompt: string
+  law: string
+  kicker: string
+  a: ReactNode
+  b: ReactNode
+}
+
+const QUIZ: QuizBoard[] = [
+  {
+    prompt: 'You’re deep in a form, mid-task. An announcement arrives.',
+    law: 'Don’t break the flow state',
+    kicker: 'Deep focus deserves a gentle, peripheral touch.',
+    a: (
+      <Shot>
+        <SkForm />
+        <div className="absolute inset-0 bg-spread-ink/30" />
+        <div className="absolute left-1/2 top-1/2 w-48 -translate-x-1/2 -translate-y-1/2 overflow-hidden rounded-[7px] bg-white shadow-lg">
+          <div className="h-1 bg-spread-orangeplate" />
+          <div className="p-3.5">
+            <p className="text-[13px] font-semibold text-spread-ink">Meet the new dashboard</p>
+            <p className="mt-1 text-[11.5px] text-spread-ink/60">Redesigned analytics, custom views.</p>
+            <button className="mt-2.5 rounded bg-spread-orangeplate px-2.5 py-1 text-[11.5px] font-medium text-white">
+              Explore now
+            </button>
+          </div>
+        </div>
+      </Shot>
+    ),
+    b: (
+      <Shot>
+        <SkForm />
+        <div className="absolute bottom-3 right-3 w-44 overflow-hidden rounded-[7px] border border-spread-ink/10 bg-white shadow-md">
+          <div className="h-1 bg-spread-orangeplate" />
+          <div className="p-3">
+            <p className="text-[12.5px] font-semibold text-spread-ink">New: Dashboard 2.0</p>
+            <p className="mt-0.5 text-[11px] text-spread-ink/60">Whenever you’re ready.</p>
+          </div>
+        </div>
+      </Shot>
+    ),
+  },
+  {
+    prompt: 'Same notice, same words. Which one do you actually read?',
+    law: 'Signaling & isolation',
+    kicker: 'If everything is equal, nothing is read.',
+    a: (
+      <Shot>
+        <div className="flex h-full items-center justify-center">
+          <p className="max-w-[270px] text-[13.5px] leading-relaxed text-spread-ink/80">
+            {NOTICE.pre}
+            {NOTICE.em1}
+            {NOTICE.mid}
+            {NOTICE.em2}
+            {NOTICE.post}
+          </p>
+        </div>
+      </Shot>
+    ),
+    b: (
+      <Shot>
+        <div className="flex h-full items-center justify-center">
+          <p className="max-w-[270px] text-[13.5px] leading-relaxed text-spread-ink/80">
+            {NOTICE.pre}
+            <strong className="font-semibold text-spread-orangedeep">{NOTICE.em1}</strong>
+            {NOTICE.mid}
+            <strong className="font-semibold text-spread-orangedeep">{NOTICE.em2}</strong>
+            {NOTICE.post}
+          </p>
+        </div>
+      </Shot>
+    ),
+  },
+  {
+    prompt: 'A welcome screen offers you the next step.',
+    law: 'Hick’s Law',
+    kicker: 'Every extra option taxes the decision.',
+    a: (
+      <Shot>
+        <div className="flex h-full items-center justify-center">
+          <div className="flex w-52 flex-col gap-1.5">
+            {['Take the tour', 'Watch a video', 'Read the guide', 'Import your data', 'Invite your team'].map(
+              (t) => (
+                <button
+                  key={t}
+                  className="rounded bg-spread-ink px-3 py-1.5 text-[12px] font-medium text-white"
+                >
+                  {t}
+                </button>
+              ),
+            )}
+          </div>
+        </div>
+      </Shot>
+    ),
+    b: (
+      <Shot>
+        <div className="flex h-full items-center justify-center">
+          <div className="flex w-52 flex-col items-center gap-2.5">
+            <button className="w-full rounded bg-spread-orangeplate px-3 py-2 text-[13px] font-medium text-white">
+              Take the tour
+            </button>
+            <span className="text-[11.5px] text-spread-ink/50 underline">or explore on your own</span>
+          </div>
+        </div>
+      </Shot>
+    ),
+  },
+  {
+    prompt: 'You don’t know what “LOI” means. Where should the answer live?',
+    law: 'Contiguity',
+    kicker: 'The explanation belongs beside the thing it explains.',
+    a: (
+      <Shot>
+        <div className="absolute right-3 top-3 w-48 rounded-[6px] border border-spread-ink/15 bg-white p-2.5 shadow-md">
+          <p className="text-[10.5px] leading-relaxed text-spread-ink/70">
+            LOI — length of interview
+            <br />
+            IR — incidence rate
+            <br />
+            DROP — drop-off rate
+          </p>
+        </div>
+        <span className="absolute right-3 top-[74px] text-[11px] text-spread-ink/40">ⓘ definitions</span>
+        <div className="mt-16 flex gap-2.5">
+          {['LOI', 'IR', 'DROP'].map((m, i) => (
+            <div key={m} className="flex-1 rounded-[6px] border border-[#e2ddd1] p-2.5">
+              <p className="font-mono text-[9px] tracking-eyebrow text-spread-ink/50">{m}</p>
+              <p className="mt-1 text-[17px] font-semibold text-spread-ink">{['12m', '47%', '9%'][i]}</p>
+            </div>
+          ))}
+        </div>
+      </Shot>
+    ),
+    b: (
+      <Shot>
+        <div className="mt-6 flex gap-2.5">
+          {['LOI', 'IR', 'DROP'].map((m, i) => (
+            <div
+              key={m}
+              className={`flex-1 rounded-[6px] border p-2.5 ${
+                i === 0 ? 'border-spread-orangeplate' : 'border-[#e2ddd1]'
+              }`}
+            >
+              <p className="font-mono text-[9px] tracking-eyebrow text-spread-ink/50">{m}</p>
+              <p className="mt-1 text-[17px] font-semibold text-spread-ink">{['12m', '47%', '9%'][i]}</p>
+            </div>
+          ))}
+        </div>
+        <div className="ml-1 mt-2 w-44 rounded-[6px] bg-spread-ink p-2.5">
+          <p className="text-[10.5px] leading-snug text-white">
+            LOI — length of interview: average minutes to finish.
+          </p>
+        </div>
+      </Shot>
+    ),
+  },
+  {
+    prompt: 'It’s tax week. The app wants to make sure you don’t forget.',
+    law: 'Recognition over recall',
+    kicker: 'Show the next step where and when it’s needed.',
+    a: (
+      <Shot>
+        <div className="flex items-center justify-between">
+          <Sk w={90} h={12} />
+          <button className="rounded border border-[#d9d4c6] px-2.5 py-1 text-[11.5px] text-spread-ink/60">
+            File taxes
+          </button>
+        </div>
+        <div className="mt-4 flex flex-col gap-2">
+          <Sk w="100%" h={40} />
+          <Sk w="100%" h={40} />
+        </div>
+        <div className="absolute inset-0 bg-spread-ink/25" />
+        <div className="absolute left-1/2 top-1/2 w-52 -translate-x-1/2 -translate-y-1/2 rounded-[7px] bg-white p-3.5 shadow-lg">
+          <p className="text-[12.5px] font-semibold text-spread-ink">
+            Don’t forget to file your taxes this week!
+          </p>
+          <button className="mt-2 rounded bg-spread-ink px-2.5 py-1 text-[11.5px] text-white">OK</button>
+        </div>
+      </Shot>
+    ),
+    b: (
+      <Shot>
+        <div className="flex items-center justify-between">
+          <Sk w={90} h={12} />
+          <div className="relative">
+            <button className="rounded border-2 border-spread-orangeplate px-2.5 py-1 text-[11.5px] font-medium text-spread-ink">
+              File taxes
+            </button>
+            <div className="absolute -bottom-7 right-0 whitespace-nowrap rounded bg-spread-orangeplate px-2 py-0.5 text-[10.5px] font-medium text-white">
+              3 days left ↑
+            </div>
+          </div>
+        </div>
+        <div className="mt-10 flex flex-col gap-2">
+          <Sk w="100%" h={40} />
+          <Sk w="100%" h={40} />
+        </div>
+      </Shot>
+    ),
+  },
+  {
+    prompt: 'Two versions of the same feature announcement.',
+    law: 'Coherence',
+    kicker: 'Cut what doesn’t teach. Decoration competes with the message.',
+    a: (
+      <Shot>
+        <div className="mx-auto flex h-full w-56 flex-col justify-center">
+          <div
+            className="h-16 rounded-[5px] border border-[#e2ddd1]"
+            style={{
+              backgroundImage:
+                'repeating-linear-gradient(45deg, #efe9db 0 6px, transparent 6px 12px)',
+            }}
+          />
+          <p className="mt-2 text-[12.5px] font-semibold text-spread-ink">Big news from the team!</p>
+          <p className="mt-1 text-[10.5px] leading-snug text-spread-ink/60">
+            We’ve been hard at work. Read about our journey, our roadmap, and everything shipping this
+            quarter across the platform.
+          </p>
+          <div className="mt-1.5 flex gap-2 text-[10px] text-spread-orangedeep underline">
+            <span>Blog</span>
+            <span>Roadmap</span>
+            <span>Webinar</span>
+          </div>
+          <div className="mt-2 flex gap-1.5">
+            <button className="rounded bg-spread-ink px-2 py-1 text-[10.5px] text-white">Read more</button>
+            <button className="rounded border border-[#d9d4c6] px-2 py-1 text-[10.5px] text-spread-ink/60">
+              Later
+            </button>
+          </div>
+        </div>
+      </Shot>
+    ),
+    b: (
+      <Shot>
+        <div className="mx-auto flex h-full w-56 flex-col items-start justify-center">
+          <p className="text-[13.5px] font-semibold text-spread-ink">
+            Exports now run 4× faster.
+          </p>
+          <button className="mt-2.5 rounded bg-spread-orangeplate px-3 py-1.5 text-[12px] font-medium text-white">
+            Try an export
+          </button>
+        </div>
+      </Shot>
+    ),
+  },
+]
+
+function QuizView({ reduceMotion }: { reduceMotion: boolean }) {
+  const [idx, setIdx] = useState(0)
+  const [revealed, setRevealed] = useState(false)
+  const [dir, setDir] = useState(1)
+
+  const go = (d: number) => {
+    setIdx((i) => {
+      const next = Math.min(Math.max(i + d, 0), QUIZ.length - 1)
+      if (next !== i) {
+        setDir(d)
+        setRevealed(false)
+      }
+      return next
+    })
+  }
+
+  useEffect(() => {
+    const onKey = (e: KeyboardEvent) => {
+      if (e.metaKey || e.ctrlKey || e.altKey) return
+      if (e.key === 'ArrowRight' || e.key === 'PageDown') {
+        e.preventDefault()
+        go(1)
+      } else if (e.key === 'ArrowLeft' || e.key === 'PageUp') {
+        e.preventDefault()
+        go(-1)
+      } else if (e.key === 'Enter' || e.key === ' ' || e.key === 'ArrowUp') {
+        e.preventDefault()
+        setRevealed((v) => !v)
+      }
+    }
+    window.addEventListener('keydown', onKey)
+    return () => window.removeEventListener('keydown', onKey)
+  }, [])
+
+  const board = QUIZ[idx]
+
+  return (
+    <div className="flex min-h-screen flex-col">
+      <ModeSwitch active="quiz" />
+      <div className="mx-auto flex w-full max-w-5xl flex-1 flex-col justify-center px-6 pb-12">
+        <AnimatePresence mode="wait" custom={dir}>
+          <motion.div
+            key={idx}
+            initial={reduceMotion ? false : { opacity: 0, x: dir * 44 }}
+            animate={{ opacity: 1, x: 0 }}
+            exit={reduceMotion ? undefined : { opacity: 0, x: dir * -44 }}
+            transition={{ duration: 0.3, ease: EASE }}
+          >
+            <p className="text-center font-mono text-[10px] uppercase tracking-eyebrow text-spread-paper/60">
+              Situation {String(idx + 1).padStart(2, '0')}
+            </p>
+            <h2 className="mx-auto mt-3 max-w-2xl text-center font-grotesk text-[clamp(20px,2.6vw,30px)] font-semibold leading-snug text-spread-paper">
+              {board.prompt}
+            </h2>
+
+            <div className="mt-8 grid gap-5 sm:grid-cols-2">
+              {(['A', 'B'] as const).map((letter) => (
+                <div key={letter} className="rounded-[8px] bg-spread-paper p-4 [clip-path:polygon(0_0,calc(100%-16px)_0,100%_16px,100%_100%,0_100%)]">
+                  <div className="flex items-baseline justify-between px-1 pb-3">
+                    <span className="font-grotesk text-[22px] font-semibold text-spread-ink">
+                      {letter}
+                    </span>
+                    <span className="font-mono text-[9px] uppercase tracking-eyebrow text-spread-ink/40">
+                      vote {letter}
+                    </span>
+                  </div>
+                  {letter === 'A' ? board.a : board.b}
+                </div>
+              ))}
+            </div>
+
+            <div className="mt-6 flex min-h-[64px] items-center justify-center">
+              <AnimatePresence>
+                {revealed && (
+                  <motion.div
+                    key="law"
+                    initial={reduceMotion ? false : { opacity: 0, y: 10, scale: 0.97 }}
+                    animate={{ opacity: 1, y: 0, scale: 1 }}
+                    exit={{ opacity: 0 }}
+                    transition={{ duration: 0.3, ease: EASE }}
+                    className="rounded-[8px] bg-spread-orangeplate px-6 py-3.5 text-center text-spread-paper"
+                  >
+                    <p className="font-mono text-[9px] uppercase tracking-eyebrow opacity-80">
+                      The law
+                    </p>
+                    <p className="mt-0.5 font-grotesk text-[17px] font-semibold">{board.law}</p>
+                    <p className="text-[12.5px] opacity-90">{board.kicker}</p>
+                  </motion.div>
+                )}
+              </AnimatePresence>
+            </div>
+          </motion.div>
+        </AnimatePresence>
+
+        <div className="mt-2 flex items-center justify-center gap-6 text-spread-paper">
+          <button
+            type="button"
+            onClick={() => go(-1)}
+            className="font-mono text-[12px] opacity-50 transition-opacity hover:opacity-100"
+            aria-label="Previous situation"
+          >
+            ←
+          </button>
+          <span className="font-mono text-[10px] uppercase tracking-eyebrow opacity-70">
+            {String(idx + 1).padStart(2, '0')} / {String(QUIZ.length).padStart(2, '0')}
+          </span>
+          <button
+            type="button"
+            onClick={() => go(1)}
+            className="font-mono text-[12px] opacity-50 transition-opacity hover:opacity-100"
+            aria-label="Next situation"
+          >
+            →
+          </button>
+          <span className="hidden font-mono text-[9px] uppercase tracking-eyebrow opacity-50 sm:inline">
+            Enter reveals the law
+          </span>
+        </div>
+      </div>
+    </div>
+  )
+}
+
 export function IndexView({ mode }: { mode: ViewMode }) {
   const reduceMotion = useReducedMotion() ?? false
 
@@ -525,6 +951,14 @@ export function IndexView({ mode }: { mode: ViewMode }) {
   }
 
   // Every mode is a bare surface: charcoal, the quiet switch, the cards.
+  if (mode === 'quiz') {
+    return (
+      <div className="min-h-screen bg-spread-bg" style={spreadBg}>
+        <QuizView reduceMotion={reduceMotion} />
+      </div>
+    )
+  }
+
   if (mode === 'deck') {
     return (
       <div className="min-h-screen bg-spread-bg" style={spreadBg}>
