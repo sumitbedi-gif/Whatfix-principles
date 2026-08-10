@@ -8,7 +8,7 @@
 const KEY = 'bfb-last-principle'
 const MODE_KEY = 'bfb-view-mode'
 let memory: string | null = null
-let modeMemory: 'grid' | 'timeline' | null = null
+let modeMemory: 'grid' | 'timeline' | 'deck' | null = null
 
 export function rememberLastPrinciple(id: string) {
   memory = id
@@ -28,8 +28,8 @@ export function readLastPrinciple(): string | null {
   }
 }
 
-/** The index arrangement the presenter last chose (grid or timeline). */
-export function rememberViewMode(mode: 'grid' | 'timeline') {
+/** The index arrangement the presenter last chose. */
+export function rememberViewMode(mode: 'grid' | 'timeline' | 'deck') {
   modeMemory = mode
   try {
     sessionStorage.setItem(MODE_KEY, mode)
@@ -38,10 +38,11 @@ export function rememberViewMode(mode: 'grid' | 'timeline') {
   }
 }
 
-export function readViewMode(): 'grid' | 'timeline' {
+export function readViewMode(): 'grid' | 'timeline' | 'deck' {
   if (modeMemory) return modeMemory
   try {
-    return sessionStorage.getItem(MODE_KEY) === 'timeline' ? 'timeline' : 'grid'
+    const stored = sessionStorage.getItem(MODE_KEY)
+    return stored === 'timeline' || stored === 'deck' ? stored : 'grid'
   } catch {
     return 'grid'
   }

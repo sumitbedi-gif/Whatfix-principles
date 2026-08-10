@@ -32,22 +32,24 @@ function App() {
 
   // The chosen arrangement is a sticky preference, so leaving a principle
   // returns to the same mode it was opened from, whatever the back link says.
-  const mode = !principle && (id === 'timeline' || readViewMode() === 'timeline')
-    ? 'timeline'
-    : 'grid'
+  const mode = principle
+    ? 'grid'
+    : id === 'timeline' || id === 'deck'
+      ? id
+      : readViewMode()
 
   // Remember where the presenter went, so the index can restore position.
   useEffect(() => {
     if (principle) rememberLastPrinciple(principle.id)
   }, [principle])
 
-  // Keep the URL honest: showing the timeline at "#/" rewrites to
-  // "#/timeline" (and makes the Grid tab's "#/" a real hash change).
+  // Keep the URL honest: showing timeline/deck at "#/" rewrites to its own
+  // hash (and makes the Grid tab's "#/" a real hash change).
   useEffect(() => {
     if (!principle) {
       rememberViewMode(mode)
-      if (mode === 'timeline' && id !== 'timeline') {
-        window.location.replace('#/timeline')
+      if (mode !== 'grid' && id !== mode) {
+        window.location.replace(`#/${mode}`)
       }
     }
   }, [principle, mode, id])

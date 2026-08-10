@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from 'react'
-import { motion, useReducedMotion } from 'motion/react'
+import { AnimatePresence, motion, useReducedMotion } from 'motion/react'
 import { CONFIG, type Principle } from '../config'
 import { BrandMark } from '../components/BrandMark'
 import { PrincipleGlyph } from '../components/PrincipleGlyphs'
@@ -100,13 +100,13 @@ function Hero() {
   )
 }
 
-type ViewMode = 'grid' | 'timeline'
+type ViewMode = 'grid' | 'timeline' | 'deck'
 
 /** Mono rule between hero and cards, with the grid/timeline switch. */
 function SectionRule({ mode }: { mode: ViewMode }) {
   const tab = (m: ViewMode, label: string) => (
     <a
-      href={m === 'grid' ? '#/' : '#/timeline'}
+      href={m === 'grid' ? '#/' : `#/${m}`}
       onClick={() => rememberViewMode(m)}
       className={`flex items-center gap-2 font-mono text-[10px] uppercase tracking-eyebrow transition-colors ${
         mode === m
@@ -131,6 +131,7 @@ function SectionRule({ mode }: { mode: ViewMode }) {
       <DotLeader />
       {tab('grid', 'Grid')}
       {tab('timeline', 'Timeline')}
+      {tab('deck', 'Deck')}
       <span className="hidden font-mono text-[10px] uppercase tracking-eyebrow opacity-60 sm:inline">
         001 — 015
       </span>
@@ -429,6 +430,152 @@ function TimelineView({ reduceMotion }: { reduceMotion: boolean }) {
   )
 }
 
+/**
+ * Deck mode: a pure presentation surface. No hero, no chrome, just one big
+ * card dealt onto the charcoal with a hinted pile behind it, so the room
+ * never learns how many are left. Cream by default, orange on hover;
+ * ←/→ (clicker Page keys) deal the next card, Enter opens it.
+ */
+const deckVariants = {
+  enter: (d: number) => ({
+    opacity: 0,
+    y: 28,
+    x: 0,
+    scale: 0.94,
+    rotate: d >= 0 ? 2.4 : -2.4,
+  }),
+  center: { opacity: 1, y: 0, x: 0, scale: 1, rotate: 0 },
+  exit: (d: number) => ({
+    opacity: 0,
+    x: d >= 0 ? -150 : 150,
+    y: 10,
+    rotate: d >= 0 ? -6 : 6,
+    scale: 0.96,
+  }),
+}
+
+function DeckView({ reduceMotion }: { reduceMotion: boolean }) {
+  const [center, setCenter] = useState(() => {
+    const i = CONFIG.findIndex((p) => p.id === readLastPrinciple())
+    return i >= 0 ? i : 0
+  })
+  const [dir, setDir] = useState(1)
+
+  const go = (d: number) =>
+    setCenter((c) => {
+      const next = Math.min(Math.max(c + d, 0), CONFIG.length - 1)
+      if (next !== c) setDir(d)
+      return next
+    })
+
+  useEffect(() => {
+    const onKey = (e: KeyboardEvent) => {
+      if (e.metaKey || e.ctrlKey || e.altKey) return
+      if (e.key === 'ArrowRight' || e.key === 'PageDown') {
+        e.preventDefault()
+        go(1)
+      } else if (e.key === 'ArrowLeft' || e.key === 'PageUp') {
+        e.preventDefault()
+        go(-1)
+      } else if (e.key === 'Enter' || e.key === ' ') {
+        e.preventDefault()
+        setCenter((c) => {
+          window.location.hash = `#/${CONFIG[c].id}`
+          return c
+        })
+      }
+    }
+    window.addEventListener('keydown', onKey)
+    return () => window.removeEventListener('keydown', onKey)
+  }, [])
+
+  const p = CONFIG[center]
+  const num = String(center + 1).padStart(3, '0')
+
+  return (
+    <div className="flex min-h-screen flex-col px-6">
+      {/* Whisper-quiet mode switch, reachable but invisible from the room. */}
+      <div className="flex items-center justify-end gap-5 pt-5 text-spread-paper">
+        {(['grid', 'timeline', 'deck'] as ViewMode[]).map((m) => (
+          <a
+            key={m}
+            href={m === 'grid' ? '#/' : `#/${m}`}
+            onClick={() => rememberViewMode(m)}
+            className={`font-mono text-[9px] uppercase tracking-eyebrow transition-opacity ${
+              m === 'deck'
+                ? 'text-spread-orange'
+                : 'opacity-40 hover:opacity-100'
+            }`}
+            aria-current={m === 'deck' ? 'true' : undefined}
+          >
+            {m}
+          </a>
+        ))}
+      </div>
+
+      <div className="flex flex-1 flex-col items-center justify-center pb-12">
+        <div className="relative w-[min(92vw,560px)]">
+          {/* The pile: constant, so the remaining count is never legible. */}
+          <div
+            aria-hidden
+            className="absolute inset-0 translate-y-3.5 rotate-[2.2deg] rounded-[10px] bg-spread-paper/30"
+          />
+          <div
+            aria-hidden
+            className="absolute inset-0 translate-y-7 scale-[0.97] -rotate-[1.7deg] rounded-[10px] bg-spread-paper/15"
+          />
+          <AnimatePresence mode="popLayout" custom={dir} initial={false}>
+            <motion.div
+              key={p.id}
+              className="relative z-10"
+              custom={dir}
+              variants={deckVariants}
+              initial="enter"
+              animate="center"
+              exit="exit"
+              transition={
+                reduceMotion
+                  ? { duration: 0 }
+                  : { type: 'spring', stiffness: 300, damping: 31 }
+              }
+            >
+              <a
+                href={`#/${p.id}`}
+                className="group flex h-[min(68vh,620px)] w-full flex-col outline-none"
+                aria-label={`Open ${p.label}`}
+              >
+                <Plates principle={p} num={num} fixedTitle />
+              </a>
+            </motion.div>
+          </AnimatePresence>
+        </div>
+
+        <div className="mt-8 flex items-center gap-6 text-spread-paper">
+          <button
+            type="button"
+            onClick={() => go(-1)}
+            className="font-mono text-[12px] tracking-eyebrow opacity-50 transition-opacity hover:opacity-100"
+            aria-label="Previous principle"
+          >
+            ←
+          </button>
+          <span className="font-mono text-[10px] uppercase tracking-eyebrow opacity-70">
+            {num}
+          </span>
+          <button
+            type="button"
+            onClick={() => go(1)}
+            className="font-mono text-[12px] tracking-eyebrow opacity-50 transition-opacity hover:opacity-100"
+            aria-label="Next principle"
+          >
+            →
+          </button>
+        </div>
+      </div>
+    </div>
+  )
+}
+
 /** Tan colophon strip mirroring the masthead. */
 function FooterPlate() {
   return (
@@ -468,6 +615,7 @@ export function IndexView({ mode }: { mode: ViewMode }) {
   // Grid scrolls that card to center; timeline scrolls the strip into view
   // (the strip itself centers the card). Fresh visits start at the top.
   useEffect(() => {
+    if (mode === 'deck') return // full-screen; nothing to scroll to
     const last = readLastPrinciple()
     if (!last) return
     const target =
@@ -483,15 +631,23 @@ export function IndexView({ mode }: { mode: ViewMode }) {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
+  const spreadBg = {
+    backgroundImage:
+      'linear-gradient(rgba(234,227,211,0.045) 1px, transparent 1px), linear-gradient(90deg, rgba(234,227,211,0.045) 1px, transparent 1px)',
+    backgroundSize: '140px 140px',
+  }
+
+  // Deck is the presenter's own surface: no hero, no footer, just the card.
+  if (mode === 'deck') {
+    return (
+      <div className="min-h-screen bg-spread-bg" style={spreadBg}>
+        <DeckView reduceMotion={reduceMotion} />
+      </div>
+    )
+  }
+
   return (
-    <div
-      className="min-h-screen bg-spread-bg"
-      style={{
-        backgroundImage:
-          'linear-gradient(rgba(234,227,211,0.045) 1px, transparent 1px), linear-gradient(90deg, rgba(234,227,211,0.045) 1px, transparent 1px)',
-        backgroundSize: '140px 140px',
-      }}
-    >
+    <div className="min-h-screen bg-spread-bg" style={spreadBg}>
       <div className="mx-auto w-full max-w-[1200px] px-4 pb-16 pt-6 sm:px-8 sm:pt-8">
         <Hero />
         <SectionRule mode={mode} />
