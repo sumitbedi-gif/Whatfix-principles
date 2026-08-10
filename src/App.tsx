@@ -4,7 +4,11 @@ import { Analytics } from '@vercel/analytics/react'
 import { CONFIG } from './config'
 import { IndexView } from './views/IndexView'
 import { DetailView } from './views/DetailView'
-import { rememberLastPrinciple } from './lastPrinciple'
+import {
+  rememberLastPrinciple,
+  rememberViewMode,
+  readViewMode,
+} from './lastPrinciple'
 
 /**
  * Minimal hash router: "#/" is the index, "#/<principle-id>" is a detail page.
@@ -26,10 +30,27 @@ function App() {
   const principle =
     id && CONFIG.find((p) => p.id === id && p.status === 'live')
 
+  // The chosen arrangement is a sticky preference, so leaving a principle
+  // returns to the same mode it was opened from, whatever the back link says.
+  const mode = !principle && (id === 'timeline' || readViewMode() === 'timeline')
+    ? 'timeline'
+    : 'grid'
+
   // Remember where the presenter went, so the index can restore position.
   useEffect(() => {
     if (principle) rememberLastPrinciple(principle.id)
   }, [principle])
+
+  // Keep the URL honest: showing the timeline at "#/" rewrites to
+  // "#/timeline" (and makes the Grid tab's "#/" a real hash change).
+  useEffect(() => {
+    if (!principle) {
+      rememberViewMode(mode)
+      if (mode === 'timeline' && id !== 'timeline') {
+        window.location.replace('#/timeline')
+      }
+    }
+  }, [principle, mode, id])
 
   // Detail pages open at the top. Returning to the index (or switching the
   // index's grid/timeline mode) leaves scroll to the IndexView restore logic.
@@ -58,7 +79,7 @@ function App() {
             exit={{ opacity: 0, y: -8 }}
             transition={{ duration: 0.32, ease: [0.22, 1, 0.36, 1] }}
           >
-            <IndexView mode={id === 'timeline' ? 'timeline' : 'grid'} />
+            <IndexView mode={mode} />
           </motion.div>
         )}
       </AnimatePresence>

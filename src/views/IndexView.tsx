@@ -3,7 +3,7 @@ import { motion, useReducedMotion } from 'motion/react'
 import { CONFIG, type Principle } from '../config'
 import { BrandMark } from '../components/BrandMark'
 import { PrincipleGlyph } from '../components/PrincipleGlyphs'
-import { readLastPrinciple } from '../lastPrinciple'
+import { readLastPrinciple, rememberViewMode } from '../lastPrinciple'
 
 /**
  * The landing page is a dark editorial "print spread": cream plates on warm
@@ -61,51 +61,16 @@ function Diamond({ filled = false }: { filled?: boolean }) {
   )
 }
 
-/** Cream masthead strip: edition marks, a ruler of the fifteen ordinals. */
-function TopPlate() {
-  return (
-    <motion.header
-      initial={{ opacity: 0, y: -10 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.5, ease: EASE }}
-      className="bg-spread-paper text-spread-ink [clip-path:polygon(0_0,100%_0,100%_calc(100%-14px),calc(100%-14px)_100%,14px_100%,0_calc(100%-14px))]"
-    >
-      <div className="flex items-center gap-5 px-5 pb-2.5 pt-3 font-mono text-[10px] uppercase tracking-eyebrow sm:px-7">
-        <span>026</span>
-        <div className="hidden flex-1 items-center justify-between opacity-60 md:flex">
-          {CONFIG.map((p) => (
-            <span key={p.id}>{p.ordinal}</span>
-          ))}
-        </div>
-        <DotLeader className="md:hidden" />
-        <span>027</span>
-      </div>
-      <div className="flex items-center gap-4 border-t border-spread-ink/20 px-5 pb-3 pt-2.5 sm:px-7">
-        <span className="font-mono text-[10px] font-medium uppercase tracking-eyebrow">
-          Build for the brain
-        </span>
-        <DotLeader />
-        <span className="hidden items-center gap-2 font-mono text-[10px] uppercase tracking-eyebrow sm:flex">
-          <Diamond /> 15 principles
-        </span>
-        <span className="flex items-center gap-2 font-mono text-[10px] uppercase tracking-eyebrow">
-          <Diamond filled /> 36 live demos
-        </span>
-      </div>
-    </motion.header>
-  )
-}
-
 /** Tan hero panel: wordmark, giant serif title, the working thesis. */
 function Hero() {
   return (
     <motion.section
       initial={{ opacity: 0, y: 14 }}
       animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.6, delay: 0.12, ease: EASE }}
-      className="mt-8 bg-spread-tan text-spread-ink [clip-path:polygon(22px_0,100%_0,100%_calc(100%-22px),calc(100%-22px)_100%,0_100%,0_22px)]"
+      transition={{ duration: 0.6, delay: 0.08, ease: EASE }}
+      className="bg-spread-tan text-spread-ink [clip-path:polygon(22px_0,100%_0,100%_calc(100%-22px),calc(100%-22px)_100%,0_100%,0_22px)]"
     >
-      <div className="px-6 pb-10 pt-7 sm:px-10 sm:pb-14 sm:pt-9">
+      <div className="px-6 pb-8 pt-7 sm:px-10 sm:pb-10 sm:pt-9">
         <div className="flex items-center gap-4">
           <a href="#/" aria-label="Whatfix home" className="shrink-0">
             <BrandMark className="h-6 w-auto" />
@@ -122,6 +87,14 @@ function Hero() {
           A working set of principles for guidance that respects attention,
           earns a glance, and never trains the user to dismiss you.
         </p>
+        <div className="mt-9 flex items-center gap-4 border-t border-spread-ink/20 pt-4 font-mono text-[10px] uppercase tracking-eyebrow opacity-80">
+          <span className="flex items-center gap-2">
+            <Diamond /> 15 principles
+          </span>
+          <span className="flex items-center gap-2">
+            <Diamond filled /> 36 live demos
+          </span>
+        </div>
       </div>
     </motion.section>
   )
@@ -134,6 +107,7 @@ function SectionRule({ mode }: { mode: ViewMode }) {
   const tab = (m: ViewMode, label: string) => (
     <a
       href={m === 'grid' ? '#/' : '#/timeline'}
+      onClick={() => rememberViewMode(m)}
       className={`flex items-center gap-2 font-mono text-[10px] uppercase tracking-eyebrow transition-colors ${
         mode === m
           ? 'text-spread-orange'
@@ -189,8 +163,8 @@ function Plates({
       <div
         className={`relative flex flex-1 flex-col rounded-[8px] px-5 pb-5 pt-4 transition-colors duration-200 [clip-path:polygon(0_0,calc(100%-16px)_0,100%_16px,100%_100%,0_100%)] ${
           active
-            ? 'bg-spread-orange text-spread-paper'
-            : 'bg-spread-paper text-spread-ink group-hover:bg-spread-orange group-hover:text-spread-paper group-focus-visible:bg-spread-orange group-focus-visible:text-spread-paper'
+            ? 'bg-spread-orangeplate text-spread-paper'
+            : 'bg-spread-paper text-spread-ink group-hover:bg-spread-orangeplate group-hover:text-spread-paper group-focus-visible:bg-spread-orangeplate group-focus-visible:text-spread-paper'
         }`}
       >
         <div className="flex items-start justify-between gap-3">
@@ -517,7 +491,6 @@ export function IndexView({ mode }: { mode: ViewMode }) {
       }}
     >
       <div className="mx-auto w-full max-w-[1200px] px-4 pb-16 pt-6 sm:px-8 sm:pt-8">
-        <TopPlate />
         <Hero />
         <SectionRule mode={mode} />
         <div id="principle-strip">

@@ -36,7 +36,10 @@ export default {
           tan: '#c9b795',
           ink: '#1d1c17',
           orange: '#eb5b2d',
-          orangedeep: '#c74a22',
+          // Deeper press-orange for the card plates: paper-white text passes
+          // AA on these (titles large-text on plate, captions normal on deep).
+          orangeplate: '#d94f22',
+          orangedeep: '#a83a18',
           faint: 'rgba(234,227,211,0.05)',
         },
       },
