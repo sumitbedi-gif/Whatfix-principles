@@ -359,10 +359,12 @@ function TimelineView({ reduceMotion }: { reduceMotion: boolean }) {
                 style={{ width: cardW }}
                 initial={reduceMotion ? false : { opacity: 0, y: 20 }}
                 animate={{
-                  opacity: isCenter ? 1 : 0.45,
+                  // Side cards stay bright cream: a projector washes dimmed
+                  // plates over charcoal into black-on-black.
+                  opacity: isCenter ? 1 : 0.85,
                   y: 0,
                   scale: isCenter ? 1 : 0.94,
-                  filter: isCenter ? 'blur(0px)' : 'blur(1.5px)',
+                  filter: isCenter ? 'blur(0px)' : 'blur(1px)',
                 }}
                 transition={
                   reduceMotion

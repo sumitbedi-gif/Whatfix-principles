@@ -11,7 +11,7 @@ import type { ReactElement, ReactNode } from 'react'
 const S = {
   fill: 'none',
   stroke: 'currentColor',
-  strokeWidth: 1.2,
+  strokeWidth: 1.7,
   vectorEffect: 'non-scaling-stroke',
 } as const
 
