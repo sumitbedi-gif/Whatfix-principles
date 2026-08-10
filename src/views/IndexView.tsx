@@ -1,7 +1,6 @@
 import { useEffect, useRef, useState } from 'react'
 import { AnimatePresence, motion, useReducedMotion } from 'motion/react'
 import { CONFIG, type Principle } from '../config'
-import { BrandMark } from '../components/BrandMark'
 import { PrincipleGlyph } from '../components/PrincipleGlyphs'
 import { readLastPrinciple, rememberViewMode } from '../lastPrinciple'
 
@@ -50,92 +49,26 @@ function CropMarks() {
   )
 }
 
-function Diamond({ filled = false }: { filled?: boolean }) {
-  return (
-    <span
-      aria-hidden
-      className={`inline-block h-[7px] w-[7px] rotate-45 ${
-        filled ? 'bg-current' : 'border border-current'
-      }`}
-    />
-  )
-}
-
-/** Tan hero panel: wordmark, giant serif title, the working thesis. */
-function Hero() {
-  return (
-    <motion.section
-      initial={{ opacity: 0, y: 14 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.6, delay: 0.08, ease: EASE }}
-      className="bg-spread-tan text-spread-ink [clip-path:polygon(22px_0,100%_0,100%_calc(100%-22px),calc(100%-22px)_100%,0_100%,0_22px)]"
-    >
-      <div className="px-6 pb-8 pt-7 sm:px-10 sm:pb-10 sm:pt-9">
-        <div className="flex items-center gap-4">
-          <a href="#/" aria-label="Whatfix home" className="shrink-0">
-            <BrandMark className="h-6 w-auto" />
-          </a>
-          <DotLeader />
-          <span className="font-mono text-[10px] uppercase tracking-eyebrow opacity-70">
-            Author enablement
-          </span>
-        </div>
-        <h1 className="mt-10 max-w-4xl font-display text-[clamp(44px,7.5vw,94px)] leading-[0.97]">
-          Things every Whatfix author should know
-        </h1>
-        <p className="mt-7 max-w-md text-[15px] leading-relaxed opacity-80">
-          A working set of principles for guidance that respects attention,
-          earns a glance, and never trains the user to dismiss you.
-        </p>
-        <div className="mt-9 flex items-center gap-4 border-t border-spread-ink/20 pt-4 font-mono text-[10px] uppercase tracking-eyebrow opacity-80">
-          <span className="flex items-center gap-2">
-            <Diamond /> 15 principles
-          </span>
-          <span className="flex items-center gap-2">
-            <Diamond filled /> 36 live demos
-          </span>
-        </div>
-      </div>
-    </motion.section>
-  )
-}
-
 type ViewMode = 'grid' | 'timeline' | 'deck'
 
-/** Mono rule between hero and cards, with the grid/timeline switch. */
-function SectionRule({ mode }: { mode: ViewMode }) {
-  const tab = (m: ViewMode, label: string) => (
-    <a
-      href={m === 'grid' ? '#/' : `#/${m}`}
-      onClick={() => rememberViewMode(m)}
-      className={`flex items-center gap-2 font-mono text-[10px] uppercase tracking-eyebrow transition-colors ${
-        mode === m
-          ? 'text-spread-orange'
-          : 'opacity-60 hover:opacity-100'
-      }`}
-      aria-current={mode === m ? 'true' : undefined}
-    >
-      <Diamond filled={mode === m} /> {label}
-    </a>
-  )
+/** Whisper-quiet mode switch, the only chrome any view carries. */
+function ModeSwitch({ active }: { active: ViewMode }) {
   return (
-    <motion.div
-      initial={{ opacity: 0 }}
-      animate={{ opacity: 1 }}
-      transition={{ duration: 0.5, delay: 0.3, ease: EASE }}
-      className="mt-14 flex items-center gap-4 text-spread-paper"
-    >
-      <span className="font-mono text-[10px] uppercase tracking-eyebrow">
-        The principles
-      </span>
-      <DotLeader />
-      {tab('grid', 'Grid')}
-      {tab('timeline', 'Timeline')}
-      {tab('deck', 'Deck')}
-      <span className="hidden font-mono text-[10px] uppercase tracking-eyebrow opacity-60 sm:inline">
-        001 — 015
-      </span>
-    </motion.div>
+    <div className="flex items-center justify-end gap-5 px-6 pt-5 text-spread-paper">
+      {(['grid', 'timeline', 'deck'] as ViewMode[]).map((m) => (
+        <a
+          key={m}
+          href={m === 'grid' ? '#/' : `#/${m}`}
+          onClick={() => rememberViewMode(m)}
+          className={`font-mono text-[9px] uppercase tracking-eyebrow transition-opacity ${
+            m === active ? 'text-spread-orange' : 'opacity-40 hover:opacity-100'
+          }`}
+          aria-current={m === active ? 'true' : undefined}
+        >
+          {m}
+        </a>
+      ))}
+    </div>
   )
 }
 
@@ -281,7 +214,7 @@ function GridView({ reduceMotion }: { reduceMotion: boolean }) {
       initial={reduceMotion ? 'shown' : 'hidden'}
       animate="shown"
       variants={{
-        shown: { transition: { staggerChildren: 0.07, delayChildren: 0.4 } },
+        shown: { transition: { staggerChildren: 0.07, delayChildren: 0.15 } },
       }}
     >
       {CONFIG.map((p, i) => (
@@ -436,22 +369,18 @@ function TimelineView({ reduceMotion }: { reduceMotion: boolean }) {
  * never learns how many are left. Cream by default, orange on hover;
  * ←/→ (clicker Page keys) deal the next card, Enter opens it.
  */
+/**
+ * A coherent physical model: the pile sits beneath the stage, the discard is
+ * off to the left. Dealing forward throws the card to the discard while the
+ * next rises from the pile. Going back retrieves the discarded card from
+ * where it disappeared, while the current one sinks back into the pile.
+ */
+const fromPile = { opacity: 0, x: 0, y: 34, scale: 0.93, rotate: 2.6 }
+const toDiscard = { opacity: 0, x: -190, y: 14, scale: 0.97, rotate: -8 }
 const deckVariants = {
-  enter: (d: number) => ({
-    opacity: 0,
-    y: 28,
-    x: 0,
-    scale: 0.94,
-    rotate: d >= 0 ? 2.4 : -2.4,
-  }),
-  center: { opacity: 1, y: 0, x: 0, scale: 1, rotate: 0 },
-  exit: (d: number) => ({
-    opacity: 0,
-    x: d >= 0 ? -150 : 150,
-    y: 10,
-    rotate: d >= 0 ? -6 : 6,
-    scale: 0.96,
-  }),
+  enter: (d: number) => (d >= 0 ? fromPile : toDiscard),
+  center: { opacity: 1, x: 0, y: 0, scale: 1, rotate: 0 },
+  exit: (d: number) => (d >= 0 ? toDiscard : fromPile),
 }
 
 function DeckView({ reduceMotion }: { reduceMotion: boolean }) {
@@ -493,25 +422,8 @@ function DeckView({ reduceMotion }: { reduceMotion: boolean }) {
   const num = String(center + 1).padStart(3, '0')
 
   return (
-    <div className="flex min-h-screen flex-col px-6">
-      {/* Whisper-quiet mode switch, reachable but invisible from the room. */}
-      <div className="flex items-center justify-end gap-5 pt-5 text-spread-paper">
-        {(['grid', 'timeline', 'deck'] as ViewMode[]).map((m) => (
-          <a
-            key={m}
-            href={m === 'grid' ? '#/' : `#/${m}`}
-            onClick={() => rememberViewMode(m)}
-            className={`font-mono text-[9px] uppercase tracking-eyebrow transition-opacity ${
-              m === 'deck'
-                ? 'text-spread-orange'
-                : 'opacity-40 hover:opacity-100'
-            }`}
-            aria-current={m === 'deck' ? 'true' : undefined}
-          >
-            {m}
-          </a>
-        ))}
-      </div>
+    <div className="flex min-h-screen flex-col">
+      <ModeSwitch active="deck" />
 
       <div className="flex flex-1 flex-col items-center justify-center pb-12">
         <div className="relative w-[min(92vw,560px)]">
@@ -536,7 +448,7 @@ function DeckView({ reduceMotion }: { reduceMotion: boolean }) {
               transition={
                 reduceMotion
                   ? { duration: 0 }
-                  : { type: 'spring', stiffness: 300, damping: 31 }
+                  : { type: 'spring', stiffness: 240, damping: 26, mass: 0.9 }
               }
             >
               <a
@@ -576,28 +488,6 @@ function DeckView({ reduceMotion }: { reduceMotion: boolean }) {
   )
 }
 
-/** Tan colophon strip mirroring the masthead. */
-function FooterPlate() {
-  return (
-    <motion.footer
-      initial={{ opacity: 0 }}
-      animate={{ opacity: 1 }}
-      transition={{ duration: 0.6, delay: 0.5, ease: EASE }}
-      className="mt-14 bg-spread-tan text-spread-ink [clip-path:polygon(14px_0,calc(100%-14px)_0,100%_14px,100%_100%,0_100%,0_14px)]"
-    >
-      <div className="flex items-center gap-4 px-5 py-3.5 font-mono text-[10px] uppercase tracking-eyebrow sm:px-7">
-        <span>Sumit Bedi · Product Design</span>
-        <DotLeader />
-        <span className="hidden normal-case tracking-normal sm:inline">
-          You are not your user.
-        </span>
-        <DotLeader className="hidden sm:block" />
-        <span>MMXXVI</span>
-      </div>
-    </motion.footer>
-  )
-}
-
 export function IndexView({ mode }: { mode: ViewMode }) {
   const reduceMotion = useReducedMotion() ?? false
 
@@ -615,13 +505,10 @@ export function IndexView({ mode }: { mode: ViewMode }) {
   // Grid scrolls that card to center; timeline scrolls the strip into view
   // (the strip itself centers the card). Fresh visits start at the top.
   useEffect(() => {
-    if (mode === 'deck') return // full-screen; nothing to scroll to
+    // Only the grid scrolls; timeline and deck are full-screen surfaces.
+    if (mode !== 'grid') return
     const last = readLastPrinciple()
-    if (!last) return
-    const target =
-      mode === 'grid'
-        ? document.getElementById(`card-${last}`)
-        : document.getElementById('principle-strip')
+    const target = last && document.getElementById(`card-${last}`)
     if (target) {
       target.scrollIntoView({ block: 'center' })
     } else {
@@ -637,7 +524,7 @@ export function IndexView({ mode }: { mode: ViewMode }) {
     backgroundSize: '140px 140px',
   }
 
-  // Deck is the presenter's own surface: no hero, no footer, just the card.
+  // Every mode is a bare surface: charcoal, the quiet switch, the cards.
   if (mode === 'deck') {
     return (
       <div className="min-h-screen bg-spread-bg" style={spreadBg}>
@@ -646,19 +533,22 @@ export function IndexView({ mode }: { mode: ViewMode }) {
     )
   }
 
+  if (mode === 'timeline') {
+    return (
+      <div className="flex min-h-screen flex-col bg-spread-bg" style={spreadBg}>
+        <ModeSwitch active="timeline" />
+        <div className="flex flex-1 flex-col justify-center pb-12">
+          <TimelineView reduceMotion={reduceMotion} />
+        </div>
+      </div>
+    )
+  }
+
   return (
     <div className="min-h-screen bg-spread-bg" style={spreadBg}>
-      <div className="mx-auto w-full max-w-[1200px] px-4 pb-16 pt-6 sm:px-8 sm:pt-8">
-        <Hero />
-        <SectionRule mode={mode} />
-        <div id="principle-strip">
-          {mode === 'grid' ? (
-            <GridView reduceMotion={reduceMotion} />
-          ) : (
-            <TimelineView reduceMotion={reduceMotion} />
-          )}
-        </div>
-        <FooterPlate />
+      <ModeSwitch active="grid" />
+      <div className="mx-auto w-full max-w-[1200px] px-4 pb-16 pt-4 sm:px-8">
+        <GridView reduceMotion={reduceMotion} />
       </div>
     </div>
   )
