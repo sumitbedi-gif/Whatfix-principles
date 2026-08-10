@@ -534,11 +534,86 @@ function SkForm() {
 }
 
 const NOTICE = {
-  pre: 'Scheduled maintenance this weekend. Reports will be ',
-  em1: 'unavailable Saturday',
-  mid: ' 02:00–06:00. Export anything you need ',
+  pre: 'Scheduled maintenance this weekend. Reports will be unavailable ',
+  em1: 'Saturday 02:00–06:00',
+  mid: '. Export anything you need ',
   em2: 'before Friday evening',
   post: '. Questions go to the support desk.',
+}
+
+/** A television remote, busy or calm. */
+function Remote({ simple }: { simple: boolean }) {
+  return (
+    <div className="flex w-[86px] flex-col items-center gap-2 rounded-[18px] bg-[#2e2d28] px-3 py-4">
+      <div className="flex w-full justify-between">
+        <span className="h-3.5 w-3.5 rounded-full bg-spread-orangeplate/90" />
+        <span className="h-3.5 w-3.5 rounded-full bg-white/25" />
+      </div>
+      {simple ? (
+        <>
+          <div className="mt-1 flex h-16 w-16 items-center justify-center rounded-full border border-white/25">
+            <span className="text-[9px] font-medium tracking-wide text-white/80">OK</span>
+          </div>
+          <div className="mt-1 h-10 w-4 rounded-full bg-white/15" />
+          <div className="h-2.5 w-10 rounded-full bg-white/25" />
+        </>
+      ) : (
+        <>
+          {[0, 1, 2, 3].map((r) => (
+            <div key={r} className="flex gap-2">
+              {[0, 1, 2].map((c) => (
+                <span key={c} className="h-3.5 w-3.5 rounded-full bg-white/20" />
+              ))}
+            </div>
+          ))}
+          <div className="mt-0.5 flex h-11 w-11 items-center justify-center rounded-full border border-white/25">
+            <span className="h-1.5 w-1.5 rounded-full bg-white/40" />
+          </div>
+          <div className="flex gap-1.5">
+            {['#c65b4e', '#5f9e6e', '#c9a83f', '#5b7fb3'].map((c) => (
+              <span key={c} className="h-2 w-3.5 rounded-sm" style={{ background: c }} />
+            ))}
+          </div>
+          {[0, 1].map((r) => (
+            <div key={r} className="flex gap-2">
+              {[0, 1, 2].map((c) => (
+                <span key={c} className="h-2 w-4 rounded-full bg-white/15" />
+              ))}
+            </div>
+          ))}
+        </>
+      )}
+    </div>
+  )
+}
+
+/** A flat-pack bookshelf diagram: numbered legend vs. labels on the parts. */
+function Shelf({ labeled }: { labeled: boolean }) {
+  const tag =
+    'absolute whitespace-nowrap text-[10px] font-medium text-spread-ink/80'
+  const numChip =
+    'absolute flex h-4 w-4 items-center justify-center rounded-full bg-spread-ink text-[9px] font-semibold text-white'
+  return (
+    <div className="relative h-[150px] w-[150px]">
+      <div className="absolute inset-0 rounded-[3px] border-2 border-spread-ink/70" />
+      <div className="absolute left-0 right-0 top-1/3 h-[2px] bg-spread-ink/70" />
+      <div className="absolute left-0 right-0 top-2/3 h-[2px] bg-spread-ink/70" />
+      <span className="absolute -top-1.5 right-5 h-3 w-3 rounded-full border-2 border-spread-ink/70 bg-white" />
+      {labeled ? (
+        <>
+          <span className={`${tag} -left-2 top-10 -translate-x-full`}>side panel —</span>
+          <span className={`${tag} -right-2 top-[52%] translate-x-full`}>— shelf</span>
+          <span className={`${tag} -top-1 right-10 -translate-y-full`}>cam screw ↘</span>
+        </>
+      ) : (
+        <>
+          <span className={`${numChip} -left-2 top-10`}>1</span>
+          <span className={`${numChip} left-1/2 top-[30%]`}>2</span>
+          <span className={`${numChip} -top-2 right-3`}>3</span>
+        </>
+      )}
+    </div>
+  )
 }
 
 interface QuizBoard {
@@ -615,176 +690,148 @@ const QUIZ: QuizBoard[] = [
     ),
   },
   {
-    prompt: 'A welcome screen offers you the next step.',
+    prompt: 'Movie night at a friend’s place. Which remote do you reach for?',
     law: 'Hick’s Law',
-    kicker: 'Every extra option taxes the decision.',
+    kicker: 'Every extra option taxes the decision — on any device.',
     a: (
       <Shot>
         <div className="flex h-full items-center justify-center">
-          <div className="flex w-52 flex-col gap-1.5">
-            {['Take the tour', 'Watch a video', 'Read the guide', 'Import your data', 'Invite your team'].map(
-              (t) => (
-                <button
-                  key={t}
-                  className="rounded bg-spread-ink px-3 py-1.5 text-[12px] font-medium text-white"
-                >
-                  {t}
-                </button>
-              ),
-            )}
-          </div>
+          <Remote simple={false} />
         </div>
       </Shot>
     ),
     b: (
       <Shot>
         <div className="flex h-full items-center justify-center">
-          <div className="flex w-52 flex-col items-center gap-2.5">
-            <button className="w-full rounded bg-spread-orangeplate px-3 py-2 text-[13px] font-medium text-white">
-              Take the tour
-            </button>
-            <span className="text-[11.5px] text-spread-ink/50 underline">or explore on your own</span>
-          </div>
+          <Remote simple />
         </div>
       </Shot>
     ),
   },
   {
-    prompt: 'You don’t know what “LOI” means. Where should the answer live?',
+    prompt: 'One bookshelf, two instruction sheets. Which one gets built tonight?',
     law: 'Contiguity',
     kicker: 'The explanation belongs beside the thing it explains.',
     a: (
       <Shot>
-        <div className="absolute right-3 top-3 w-48 rounded-[6px] border border-spread-ink/15 bg-white p-2.5 shadow-md">
-          <p className="text-[10.5px] leading-relaxed text-spread-ink/70">
-            LOI — length of interview
-            <br />
-            IR — incidence rate
-            <br />
-            DROP — drop-off rate
+        <div className="flex h-full flex-col items-center justify-center gap-4">
+          <Shelf labeled={false} />
+          <p className="text-[10.5px] text-spread-ink/60">
+            1 — side panel&ensp;·&ensp;2 — shelf&ensp;·&ensp;3 — cam screw&ensp;·&ensp;see page 4
           </p>
-        </div>
-        <span className="absolute right-3 top-[74px] text-[11px] text-spread-ink/40">ⓘ definitions</span>
-        <div className="mt-16 flex gap-2.5">
-          {['LOI', 'IR', 'DROP'].map((m, i) => (
-            <div key={m} className="flex-1 rounded-[6px] border border-[#e2ddd1] p-2.5">
-              <p className="font-mono text-[9px] tracking-eyebrow text-spread-ink/50">{m}</p>
-              <p className="mt-1 text-[17px] font-semibold text-spread-ink">{['12m', '47%', '9%'][i]}</p>
-            </div>
-          ))}
         </div>
       </Shot>
     ),
     b: (
       <Shot>
-        <div className="mt-6 flex gap-2.5">
-          {['LOI', 'IR', 'DROP'].map((m, i) => (
+        <div className="flex h-full items-center justify-center">
+          <Shelf labeled />
+        </div>
+      </Shot>
+    ),
+  },
+  {
+    prompt: 'You need to call Priya. Go.',
+    law: 'Recognition over recall',
+    kicker: 'Choosing from what you see beats dredging from memory.',
+    a: (
+      <Shot>
+        <div className="flex h-full flex-col items-center justify-center gap-2.5">
+          <div className="flex h-8 w-40 items-center rounded-[5px] border border-[#d9d4c6] px-2.5">
+            <span className="text-[11px] text-spread-ink/35">Priya’s number was…</span>
+          </div>
+          <div className="grid grid-cols-3 gap-1.5">
+            {['1', '2', '3', '4', '5', '6', '7', '8', '9', '*', '0', '#'].map((k) => (
+              <span
+                key={k}
+                className="flex h-8 w-11 items-center justify-center rounded-[5px] border border-[#d9d4c6] text-[12px] text-spread-ink/70"
+              >
+                {k}
+              </span>
+            ))}
+          </div>
+        </div>
+      </Shot>
+    ),
+    b: (
+      <Shot>
+        <div className="flex h-full flex-col items-center justify-center gap-2">
+          {[
+            { n: 'Anaya', tone: '#5b7fb3' },
+            { n: 'Priya', tone: '#c65b4e' },
+            { n: 'Rohan', tone: '#5f9e6e' },
+          ].map(({ n, tone }) => (
             <div
-              key={m}
-              className={`flex-1 rounded-[6px] border p-2.5 ${
-                i === 0 ? 'border-spread-orangeplate' : 'border-[#e2ddd1]'
+              key={n}
+              className={`flex w-48 items-center gap-2.5 rounded-[7px] border p-2 ${
+                n === 'Priya' ? 'border-spread-orangeplate' : 'border-[#e2ddd1]'
               }`}
             >
-              <p className="font-mono text-[9px] tracking-eyebrow text-spread-ink/50">{m}</p>
-              <p className="mt-1 text-[17px] font-semibold text-spread-ink">{['12m', '47%', '9%'][i]}</p>
+              <span
+                className="flex h-7 w-7 items-center justify-center rounded-full text-[11px] font-semibold text-white"
+                style={{ background: tone }}
+              >
+                {n[0]}
+              </span>
+              <span className="flex-1 text-[12.5px] text-spread-ink">{n}</span>
+              {n === 'Priya' && (
+                <span className="rounded bg-spread-orangeplate px-2 py-0.5 text-[10.5px] font-medium text-white">
+                  Call
+                </span>
+              )}
             </div>
           ))}
         </div>
-        <div className="ml-1 mt-2 w-44 rounded-[6px] bg-spread-ink p-2.5">
-          <p className="text-[10.5px] leading-snug text-white">
-            LOI — length of interview: average minutes to finish.
-          </p>
-        </div>
       </Shot>
     ),
   },
   {
-    prompt: 'It’s tax week. The app wants to make sure you don’t forget.',
-    law: 'Recognition over recall',
-    kicker: 'Show the next step where and when it’s needed.',
+    prompt: 'You typed “deck attached” and hit Send. Nothing is attached.',
+    law: 'Error prevention > error messages',
+    kicker: 'The cheapest mistake is the one that never happens.',
     a: (
       <Shot>
-        <div className="flex items-center justify-between">
-          <Sk w={90} h={12} />
-          <button className="rounded border border-[#d9d4c6] px-2.5 py-1 text-[11.5px] text-spread-ink/60">
-            File taxes
-          </button>
-        </div>
-        <div className="mt-4 flex flex-col gap-2">
-          <Sk w="100%" h={40} />
-          <Sk w="100%" h={40} />
-        </div>
-        <div className="absolute inset-0 bg-spread-ink/25" />
-        <div className="absolute left-1/2 top-1/2 w-52 -translate-x-1/2 -translate-y-1/2 rounded-[7px] bg-white p-3.5 shadow-lg">
-          <p className="text-[12.5px] font-semibold text-spread-ink">
-            Don’t forget to file your taxes this week!
+        <div className="mx-auto mt-1 w-60 rounded-[7px] border border-[#e2ddd1]">
+          <p className="border-b border-[#efeadd] px-3 py-1.5 text-[10.5px] text-spread-ink/50">
+            To: leadership@company.com
           </p>
-          <button className="mt-2 rounded bg-spread-ink px-2.5 py-1 text-[11.5px] text-white">OK</button>
+          <p className="px-3 py-2 text-[11.5px] leading-snug text-spread-ink/80">
+            Hi all, the final deck is attached. Would love thoughts before Friday.
+          </p>
+          <div className="px-3 pb-2.5">
+            <span className="rounded bg-spread-ink px-2.5 py-1 text-[10.5px] text-white">Sent ✓</span>
+          </div>
+        </div>
+        <div className="mx-auto mt-3 w-60 rounded-[7px] border border-bad/40 bg-bad/10 px-3 py-2">
+          <p className="text-[11px] font-medium text-bad">
+            Re: re: re: “There’s no attachment.”
+          </p>
         </div>
       </Shot>
     ),
     b: (
       <Shot>
-        <div className="flex items-center justify-between">
-          <Sk w={90} h={12} />
-          <div className="relative">
-            <button className="rounded border-2 border-spread-orangeplate px-2.5 py-1 text-[11.5px] font-medium text-spread-ink">
-              File taxes
-            </button>
-            <div className="absolute -bottom-7 right-0 whitespace-nowrap rounded bg-spread-orangeplate px-2 py-0.5 text-[10.5px] font-medium text-white">
-              3 days left ↑
-            </div>
-          </div>
-        </div>
-        <div className="mt-10 flex flex-col gap-2">
-          <Sk w="100%" h={40} />
-          <Sk w="100%" h={40} />
-        </div>
-      </Shot>
-    ),
-  },
-  {
-    prompt: 'Two versions of the same feature announcement.',
-    law: 'Coherence',
-    kicker: 'Cut what doesn’t teach. Decoration competes with the message.',
-    a: (
-      <Shot>
-        <div className="mx-auto flex h-full w-56 flex-col justify-center">
-          <div
-            className="h-16 rounded-[5px] border border-[#e2ddd1]"
-            style={{
-              backgroundImage:
-                'repeating-linear-gradient(45deg, #efe9db 0 6px, transparent 6px 12px)',
-            }}
-          />
-          <p className="mt-2 text-[12.5px] font-semibold text-spread-ink">Big news from the team!</p>
-          <p className="mt-1 text-[10.5px] leading-snug text-spread-ink/60">
-            We’ve been hard at work. Read about our journey, our roadmap, and everything shipping this
-            quarter across the platform.
+        <div className="mx-auto mt-1 w-60 rounded-[7px] border border-[#e2ddd1] opacity-50">
+          <p className="border-b border-[#efeadd] px-3 py-1.5 text-[10.5px] text-spread-ink/50">
+            To: leadership@company.com
           </p>
-          <div className="mt-1.5 flex gap-2 text-[10px] text-spread-orangedeep underline">
-            <span>Blog</span>
-            <span>Roadmap</span>
-            <span>Webinar</span>
-          </div>
-          <div className="mt-2 flex gap-1.5">
-            <button className="rounded bg-spread-ink px-2 py-1 text-[10.5px] text-white">Read more</button>
-            <button className="rounded border border-[#d9d4c6] px-2 py-1 text-[10.5px] text-spread-ink/60">
-              Later
+          <p className="px-3 py-2 text-[11.5px] leading-snug text-spread-ink/80">
+            Hi all, the final deck is attached. Would love thoughts before Friday.
+          </p>
+        </div>
+        <div className="absolute left-1/2 top-1/2 w-56 -translate-x-1/2 -translate-y-1/2 rounded-[8px] bg-white p-3.5 shadow-lg">
+          <p className="text-[12.5px] font-semibold text-spread-ink">No attachment found</p>
+          <p className="mt-1 text-[11px] leading-snug text-spread-ink/60">
+            You wrote “attached”, but nothing is attached yet.
+          </p>
+          <div className="mt-2.5 flex gap-1.5">
+            <button className="rounded bg-spread-orangeplate px-2.5 py-1 text-[11px] font-medium text-white">
+              Attach file
+            </button>
+            <button className="rounded border border-[#d9d4c6] px-2.5 py-1 text-[11px] text-spread-ink/60">
+              Send anyway
             </button>
           </div>
-        </div>
-      </Shot>
-    ),
-    b: (
-      <Shot>
-        <div className="mx-auto flex h-full w-56 flex-col items-start justify-center">
-          <p className="text-[13.5px] font-semibold text-spread-ink">
-            Exports now run 4× faster.
-          </p>
-          <button className="mt-2.5 rounded bg-spread-orangeplate px-3 py-1.5 text-[12px] font-medium text-white">
-            Try an export
-          </button>
         </div>
       </Shot>
     ),
@@ -792,7 +839,11 @@ const QUIZ: QuizBoard[] = [
 ]
 
 function QuizView({ reduceMotion }: { reduceMotion: boolean }) {
-  const [idx, setIdx] = useState(0)
+  // ?board=N (1-based) deep-links a situation, e.g. /?board=4#/quiz.
+  const [idx, setIdx] = useState(() => {
+    const n = Number(new URLSearchParams(window.location.search).get('board'))
+    return Number.isInteger(n) && n >= 1 && n <= QUIZ.length ? n - 1 : 0
+  })
   const [revealed, setRevealed] = useState(false)
   const [dir, setDir] = useState(1)
 
