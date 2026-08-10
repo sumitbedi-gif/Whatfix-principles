@@ -533,6 +533,239 @@ function SkForm() {
   )
 }
 
+/**
+ * Cycles through phases for the quiz boards' ambient loops. `starts[i]` is
+ * the ms offset at which phase i begins; the whole cycle repeats every
+ * `period` ms. Returns the current phase index.
+ */
+function useCycle(starts: number[], period: number): number {
+  const [phase, setPhase] = useState(0)
+  useEffect(() => {
+    let timers: number[] = []
+    const run = () => {
+      timers.forEach(clearTimeout)
+      timers = []
+      setPhase(0)
+      starts.forEach((t, i) => {
+        if (i > 0) timers.push(window.setTimeout(() => setPhase(i), t))
+      })
+    }
+    run()
+    const iv = window.setInterval(run, period)
+    return () => {
+      window.clearInterval(iv)
+      timers.forEach(clearTimeout)
+    }
+    // starts/period are inline constants at each call site.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [])
+  return phase
+}
+
+/** Board 01-A: the modal barges in over the focused form, then leaves. */
+function FlowModalLoop() {
+  const reduce = useReducedMotion() ?? false
+  const phase = useCycle([0, 700, 3400], 4800)
+  const shown = reduce || phase === 1
+  return (
+    <Shot>
+      <SkForm />
+      <AnimatePresence>
+        {shown && (
+          <motion.div
+            key="modal"
+            className="absolute inset-0"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.25 }}
+          >
+            <div className="absolute inset-0 bg-spread-ink/30" />
+            <div className="absolute left-1/2 top-1/2 w-48 -translate-x-1/2 -translate-y-1/2">
+              <motion.div
+                initial={{ opacity: 0, scale: 0.92, y: 8 }}
+                animate={{ opacity: 1, scale: 1, y: 0 }}
+                exit={{ opacity: 0, scale: 0.95, y: 4 }}
+                transition={{ duration: 0.3, ease: EASE }}
+                className="overflow-hidden rounded-[7px] bg-white shadow-lg"
+              >
+                <div className="h-1 bg-spread-orangeplate" />
+                <div className="p-3.5">
+                  <p className="text-[13px] font-semibold text-spread-ink">Meet the new dashboard</p>
+                  <p className="mt-1 text-[11.5px] text-spread-ink/60">
+                    Redesigned analytics, custom views.
+                  </p>
+                  <button className="mt-2.5 rounded bg-spread-orangeplate px-2.5 py-1 text-[11.5px] font-medium text-white">
+                    Explore now
+                  </button>
+                </div>
+              </motion.div>
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+    </Shot>
+  )
+}
+
+/** Board 01-B: the same message slides in as a toast, waits, slides out. */
+function FlowToastLoop() {
+  const reduce = useReducedMotion() ?? false
+  const phase = useCycle([0, 700, 3700], 4800)
+  const shown = reduce || phase === 1
+  return (
+    <Shot>
+      <SkForm />
+      <div className="absolute bottom-3 right-3 w-44">
+        <AnimatePresence>
+          {shown && (
+            <motion.div
+              key="toast"
+              initial={{ opacity: 0, x: 64 }}
+              animate={{ opacity: 1, x: 0 }}
+              exit={{ opacity: 0, x: 64 }}
+              transition={{ duration: 0.35, ease: EASE }}
+              className="overflow-hidden rounded-[7px] border border-spread-ink/10 bg-white shadow-md"
+            >
+              <div className="h-1 bg-spread-orangeplate" />
+              <div className="p-3">
+                <p className="text-[12.5px] font-semibold text-spread-ink">New: Dashboard 2.0</p>
+                <p className="mt-0.5 text-[11px] text-spread-ink/60">Whenever you’re ready.</p>
+              </div>
+            </motion.div>
+          )}
+        </AnimatePresence>
+      </div>
+    </Shot>
+  )
+}
+
+/** Board 05-A: the mail goes out, then the reply lands. */
+function MailThreadLoop() {
+  const reduce = useReducedMotion() ?? false
+  const phase = useCycle([0, 1500, 4600], 5600)
+  const replyShown = reduce || phase === 1
+  return (
+    <Shot>
+      <div className="mx-auto w-[280px] overflow-hidden rounded-[8px] border border-[#e2ddd1] bg-white shadow-sm">
+        <div className="flex items-center gap-2 border-b border-[#efeadd] px-3 py-2">
+          <span className="h-2 w-2 rounded-full bg-[#e2ddd1]" />
+          <span className="h-2 w-2 rounded-full bg-[#e2ddd1]" />
+          <span className="ml-1 text-[11.5px] font-semibold text-spread-ink">Final deck</span>
+          <span className="ml-auto text-[10px] text-spread-ink/40">Inbox</span>
+        </div>
+        <div className="px-3 py-2.5">
+          <div className="flex items-center gap-2">
+            <span className="flex h-6 w-6 items-center justify-center rounded-full bg-spread-ink text-[10px] font-semibold text-white">
+              S
+            </span>
+            <span className="text-[11px] font-medium text-spread-ink">You</span>
+            <span className="text-[10px] text-spread-ink/40">to Leadership · 10:42</span>
+          </div>
+          <p className="mt-1.5 text-[12px] leading-snug text-spread-ink/80">
+            Hi all, please find the final deck attached. Would love your thoughts before Friday.
+          </p>
+        </div>
+        <AnimatePresence>
+          {replyShown && (
+            <motion.div
+              key="reply"
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0 }}
+              transition={{ duration: 0.35, ease: EASE }}
+              className="border-t border-[#efeadd] bg-bad/5 px-3 py-2.5"
+            >
+              <div className="flex items-center gap-2">
+                <span className="flex h-6 w-6 items-center justify-center rounded-full bg-[#5b7fb3] text-[10px] font-semibold text-white">
+                  R
+                </span>
+                <span className="text-[11px] font-medium text-spread-ink">Ravi</span>
+                <span className="text-[10px] text-spread-ink/40">10:44</span>
+              </div>
+              <p className="mt-1.5 text-[12px] font-medium leading-snug text-bad">
+                Hey, where is the attached PDF?
+              </p>
+            </motion.div>
+          )}
+        </AnimatePresence>
+      </div>
+    </Shot>
+  )
+}
+
+/** Board 05-B: Send is pressed, the intercept dialog catches it. */
+function MailInterceptLoop() {
+  const reduce = useReducedMotion() ?? false
+  const phase = useCycle([0, 1400, 1750, 4700], 5800)
+  // phase 1 = Send pressed, phase 2 = dialog up, phase 3 = reset beat.
+  const pressed = !reduce && phase === 1
+  const dialogShown = reduce || phase === 2
+  return (
+    <Shot>
+      <motion.div
+        animate={{ opacity: dialogShown ? 0.55 : 1 }}
+        transition={{ duration: 0.25 }}
+        className="mx-auto w-[280px] overflow-hidden rounded-[8px] border border-[#e2ddd1] bg-white"
+      >
+        <div className="flex items-center gap-2 border-b border-[#efeadd] px-3 py-2">
+          <span className="text-[11.5px] font-semibold text-spread-ink">New message</span>
+          <span className="ml-auto text-[10px] text-spread-ink/40">To: Leadership</span>
+        </div>
+        <p className="px-3 py-2 text-[12px] leading-snug text-spread-ink/80">
+          Hi all, please find the final deck attached. Would love your thoughts before Friday.
+        </p>
+        <div className="flex items-center gap-2.5 border-t border-[#efeadd] px-3 py-2">
+          <motion.span
+            animate={{ scale: pressed ? 0.88 : 1 }}
+            transition={{ duration: 0.15 }}
+            className="rounded bg-spread-ink px-2.5 py-1 text-[10.5px] text-white"
+          >
+            Send
+          </motion.span>
+          <span className="text-[12px] text-spread-ink/40">📎</span>
+        </div>
+      </motion.div>
+      <AnimatePresence>
+        {dialogShown && (
+          <motion.div
+            key="dialog"
+            className="absolute inset-0"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.2 }}
+          >
+            <div className="absolute inset-0 bg-spread-ink/20" />
+            <div className="absolute left-1/2 top-1/2 w-60 -translate-x-1/2 -translate-y-1/2">
+              <motion.div
+                initial={{ opacity: 0, scale: 0.92, y: 8 }}
+                animate={{ opacity: 1, scale: 1, y: 0 }}
+                exit={{ opacity: 0, scale: 0.95 }}
+                transition={{ duration: 0.28, ease: EASE }}
+                className="rounded-[8px] bg-white p-4 shadow-xl"
+              >
+                <p className="text-[13px] font-semibold text-spread-ink">No attachment found</p>
+                <p className="mt-1 text-[11.5px] leading-snug text-spread-ink/60">
+                  You wrote “attached”, but there are no files attached to this message.
+                </p>
+                <div className="mt-3 flex gap-1.5">
+                  <button className="rounded bg-spread-orangeplate px-2.5 py-1 text-[11.5px] font-medium text-white">
+                    Attach file
+                  </button>
+                  <button className="rounded border border-[#d9d4c6] px-2.5 py-1 text-[11.5px] text-spread-ink/60">
+                    Send anyway
+                  </button>
+                </div>
+              </motion.div>
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+    </Shot>
+  )
+}
+
 const NOTICE = {
   pre: 'Scheduled maintenance this weekend. Reports will be unavailable ',
   em1: 'Saturday 02:00–06:00',
@@ -608,34 +841,8 @@ const QUIZ: QuizBoard[] = [
     prompt: 'You’re deep in a form, mid-task. An announcement arrives.',
     law: 'Don’t break the flow state',
     kicker: 'Deep focus deserves a gentle, peripheral touch.',
-    a: (
-      <Shot>
-        <SkForm />
-        <div className="absolute inset-0 bg-spread-ink/30" />
-        <div className="absolute left-1/2 top-1/2 w-48 -translate-x-1/2 -translate-y-1/2 overflow-hidden rounded-[7px] bg-white shadow-lg">
-          <div className="h-1 bg-spread-orangeplate" />
-          <div className="p-3.5">
-            <p className="text-[13px] font-semibold text-spread-ink">Meet the new dashboard</p>
-            <p className="mt-1 text-[11.5px] text-spread-ink/60">Redesigned analytics, custom views.</p>
-            <button className="mt-2.5 rounded bg-spread-orangeplate px-2.5 py-1 text-[11.5px] font-medium text-white">
-              Explore now
-            </button>
-          </div>
-        </div>
-      </Shot>
-    ),
-    b: (
-      <Shot>
-        <SkForm />
-        <div className="absolute bottom-3 right-3 w-44 overflow-hidden rounded-[7px] border border-spread-ink/10 bg-white shadow-md">
-          <div className="h-1 bg-spread-orangeplate" />
-          <div className="p-3">
-            <p className="text-[12.5px] font-semibold text-spread-ink">New: Dashboard 2.0</p>
-            <p className="mt-0.5 text-[11px] text-spread-ink/60">Whenever you’re ready.</p>
-          </div>
-        </div>
-      </Shot>
-    ),
+    a: <FlowModalLoop />,
+    b: <FlowToastLoop />,
   },
   {
     prompt: 'Same notice, same words. Which one do you actually read?',
@@ -754,73 +961,8 @@ const QUIZ: QuizBoard[] = [
     prompt: 'You typed “deck attached” and hit Send. Nothing is attached.',
     law: 'Error prevention > error messages',
     kicker: 'The cheapest mistake is the one that never happens.',
-    a: (
-      <Shot>
-        <div className="mx-auto w-[280px] overflow-hidden rounded-[8px] border border-[#e2ddd1] bg-white shadow-sm">
-          <div className="flex items-center gap-2 border-b border-[#efeadd] px-3 py-2">
-            <span className="h-2 w-2 rounded-full bg-[#e2ddd1]" />
-            <span className="h-2 w-2 rounded-full bg-[#e2ddd1]" />
-            <span className="ml-1 text-[11.5px] font-semibold text-spread-ink">Final deck</span>
-            <span className="ml-auto text-[10px] text-spread-ink/40">Inbox</span>
-          </div>
-          <div className="px-3 py-2.5">
-            <div className="flex items-center gap-2">
-              <span className="flex h-6 w-6 items-center justify-center rounded-full bg-spread-ink text-[10px] font-semibold text-white">
-                S
-              </span>
-              <span className="text-[11px] font-medium text-spread-ink">You</span>
-              <span className="text-[10px] text-spread-ink/40">to Leadership · 10:42</span>
-            </div>
-            <p className="mt-1.5 text-[12px] leading-snug text-spread-ink/80">
-              Hi all, please find the final deck attached. Would love your thoughts before Friday.
-            </p>
-          </div>
-          <div className="border-t border-[#efeadd] bg-bad/5 px-3 py-2.5">
-            <div className="flex items-center gap-2">
-              <span className="flex h-6 w-6 items-center justify-center rounded-full bg-[#5b7fb3] text-[10px] font-semibold text-white">
-                R
-              </span>
-              <span className="text-[11px] font-medium text-spread-ink">Ravi</span>
-              <span className="text-[10px] text-spread-ink/40">10:44</span>
-            </div>
-            <p className="mt-1.5 text-[12px] font-medium leading-snug text-bad">
-              Image not received. I don’t see anything attached?
-            </p>
-          </div>
-        </div>
-      </Shot>
-    ),
-    b: (
-      <Shot>
-        <div className="mx-auto w-[280px] overflow-hidden rounded-[8px] border border-[#e2ddd1] bg-white opacity-60">
-          <div className="flex items-center gap-2 border-b border-[#efeadd] px-3 py-2">
-            <span className="text-[11.5px] font-semibold text-spread-ink">New message</span>
-            <span className="ml-auto text-[10px] text-spread-ink/40">To: Leadership</span>
-          </div>
-          <p className="px-3 py-2 text-[12px] leading-snug text-spread-ink/80">
-            Hi all, please find the final deck attached. Would love your thoughts before Friday.
-          </p>
-          <div className="flex items-center gap-2.5 border-t border-[#efeadd] px-3 py-2">
-            <span className="rounded bg-spread-ink px-2.5 py-1 text-[10.5px] text-white">Send</span>
-            <span className="text-[12px] text-spread-ink/40">📎</span>
-          </div>
-        </div>
-        <div className="absolute left-1/2 top-1/2 w-60 -translate-x-1/2 -translate-y-1/2 rounded-[8px] bg-white p-4 shadow-xl">
-          <p className="text-[13px] font-semibold text-spread-ink">No attachment found</p>
-          <p className="mt-1 text-[11.5px] leading-snug text-spread-ink/60">
-            You wrote “attached”, but there are no files attached to this message.
-          </p>
-          <div className="mt-3 flex gap-1.5">
-            <button className="rounded bg-spread-orangeplate px-2.5 py-1 text-[11.5px] font-medium text-white">
-              Attach file
-            </button>
-            <button className="rounded border border-[#d9d4c6] px-2.5 py-1 text-[11.5px] text-spread-ink/60">
-              Send anyway
-            </button>
-          </div>
-        </div>
-      </Shot>
-    ),
+    a: <MailThreadLoop />,
+    b: <MailInterceptLoop />,
   },
 ]
 
