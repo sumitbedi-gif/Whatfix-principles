@@ -4,6 +4,7 @@ import { Analytics } from '@vercel/analytics/react'
 import { CONFIG } from './config'
 import { IndexView } from './views/IndexView'
 import { DetailView } from './views/DetailView'
+import { rememberLastPrinciple } from './lastPrinciple'
 
 /**
  * Minimal hash router: "#/" is the index, "#/<principle-id>" is a detail page.
@@ -25,10 +26,16 @@ function App() {
   const principle =
     id && CONFIG.find((p) => p.id === id && p.status === 'live')
 
-  // Scroll to top whenever the route changes.
+  // Remember where the presenter went, so the index can restore position.
   useEffect(() => {
-    window.scrollTo({ top: 0 })
-  }, [route])
+    if (principle) rememberLastPrinciple(principle.id)
+  }, [principle])
+
+  // Detail pages open at the top. Returning to the index (or switching the
+  // index's grid/timeline mode) leaves scroll to the IndexView restore logic.
+  useEffect(() => {
+    if (principle) window.scrollTo({ top: 0 })
+  }, [route, principle])
 
   return (
     <div className="min-h-full bg-canvas text-ink">
@@ -51,7 +58,7 @@ function App() {
             exit={{ opacity: 0, y: -8 }}
             transition={{ duration: 0.32, ease: [0.22, 1, 0.36, 1] }}
           >
-            <IndexView />
+            <IndexView mode={id === 'timeline' ? 'timeline' : 'grid'} />
           </motion.div>
         )}
       </AnimatePresence>

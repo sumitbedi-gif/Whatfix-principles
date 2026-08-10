@@ -76,7 +76,7 @@ function GlyphFlow() {
 function GlyphSignal() {
   return (
     <Svg title="Beacon with radiating ticks">
-      <circle cx="48" cy="48" r="6" fill="currentColor" stroke="none" />
+      <circle cx="48" cy="48" r="4.5" fill="currentColor" stroke="none" />
       <circle cx="48" cy="48" r="15" {...S} />
       <circle cx="48" cy="48" r="25" {...S} />
       <g {...S}>
@@ -108,7 +108,7 @@ function GlyphHicks() {
         <path d="M16 20 L48 76 M28 20 L48 76 M40 20 L48 76 M56 20 L48 76 M68 20 L48 76 M80 20 L48 76" />
         <path d="M16 20 L80 20" />
       </g>
-      <path d="M48 76 L48 88" stroke="currentColor" strokeWidth="2.6" fill="none" />
+      <path d="M48 76 L48 88" {...S} />
       <circle cx="48" cy="76" r="3" fill="currentColor" stroke="none" />
     </Svg>
   )
@@ -161,7 +161,7 @@ function GlyphMotor() {
       <circle cx="66" cy="62" r="6" {...S} />
       <circle cx="66" cy="62" r="1.8" fill="currentColor" stroke="none" />
       <path d="M16 26 C 40 8, 66 22, 68 46" {...S} strokeDasharray="4 4" />
-      <path d="M14 20 L14 34 L24 28 Z" fill="currentColor" stroke="none" />
+      <path d="M14 19 L14 35 L26 27 Z" {...S} strokeLinejoin="round" />
     </Svg>
   )
 }
