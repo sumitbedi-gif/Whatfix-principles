@@ -541,49 +541,28 @@ const NOTICE = {
   post: '. Questions go to the support desk.',
 }
 
-/** A television remote, busy or calm. */
-function Remote({ simple }: { simple: boolean }) {
+/**
+ * Renders the generated raster image if it exists (drop files into
+ * public/quiz/), otherwise the hand-drawn vector fallback.
+ */
+function ImgOr({
+  src,
+  alt,
+  fallback,
+}: {
+  src: string
+  alt: string
+  fallback: ReactNode
+}) {
+  const [failed, setFailed] = useState(false)
+  if (failed) return <>{fallback}</>
   return (
-    <div className="flex w-[86px] flex-col items-center gap-2 rounded-[18px] bg-[#2e2d28] px-3 py-4">
-      <div className="flex w-full justify-between">
-        <span className="h-3.5 w-3.5 rounded-full bg-spread-orangeplate/90" />
-        <span className="h-3.5 w-3.5 rounded-full bg-white/25" />
-      </div>
-      {simple ? (
-        <>
-          <div className="mt-1 flex h-16 w-16 items-center justify-center rounded-full border border-white/25">
-            <span className="text-[9px] font-medium tracking-wide text-white/80">OK</span>
-          </div>
-          <div className="mt-1 h-10 w-4 rounded-full bg-white/15" />
-          <div className="h-2.5 w-10 rounded-full bg-white/25" />
-        </>
-      ) : (
-        <>
-          {[0, 1, 2, 3].map((r) => (
-            <div key={r} className="flex gap-2">
-              {[0, 1, 2].map((c) => (
-                <span key={c} className="h-3.5 w-3.5 rounded-full bg-white/20" />
-              ))}
-            </div>
-          ))}
-          <div className="mt-0.5 flex h-11 w-11 items-center justify-center rounded-full border border-white/25">
-            <span className="h-1.5 w-1.5 rounded-full bg-white/40" />
-          </div>
-          <div className="flex gap-1.5">
-            {['#c65b4e', '#5f9e6e', '#c9a83f', '#5b7fb3'].map((c) => (
-              <span key={c} className="h-2 w-3.5 rounded-sm" style={{ background: c }} />
-            ))}
-          </div>
-          {[0, 1].map((r) => (
-            <div key={r} className="flex gap-2">
-              {[0, 1, 2].map((c) => (
-                <span key={c} className="h-2 w-4 rounded-full bg-white/15" />
-              ))}
-            </div>
-          ))}
-        </>
-      )}
-    </div>
+    <img
+      src={src}
+      alt={alt}
+      onError={() => setFailed(true)}
+      className="h-full w-full object-contain"
+    />
   )
 }
 
@@ -664,46 +643,38 @@ const QUIZ: QuizBoard[] = [
     kicker: 'If everything is equal, nothing is read.',
     a: (
       <Shot>
-        <div className="flex h-full items-center justify-center">
-          <p className="max-w-[270px] text-[13.5px] leading-relaxed text-spread-ink/80">
+        <SkForm />
+        <div className="absolute inset-0 bg-spread-ink/30" />
+        <div className="absolute left-1/2 top-1/2 w-[270px] -translate-x-1/2 -translate-y-1/2 rounded-[8px] bg-white p-4 shadow-lg">
+          <p className="text-[12px] leading-relaxed text-spread-ink/80">
             {NOTICE.pre}
             {NOTICE.em1}
             {NOTICE.mid}
             {NOTICE.em2}
             {NOTICE.post}
           </p>
+          <button className="mt-2.5 rounded bg-spread-ink px-2.5 py-1 text-[11px] text-white">
+            Got it
+          </button>
         </div>
       </Shot>
     ),
     b: (
       <Shot>
-        <div className="flex h-full items-center justify-center">
-          <p className="max-w-[270px] text-[13.5px] leading-relaxed text-spread-ink/80">
+        <SkForm />
+        <div className="absolute inset-0 bg-spread-ink/30" />
+        <div className="absolute left-1/2 top-1/2 w-[270px] -translate-x-1/2 -translate-y-1/2 rounded-[8px] bg-white p-4 shadow-lg">
+          <p className="text-[12.5px] font-semibold text-spread-ink">Scheduled maintenance</p>
+          <p className="mt-1 text-[12px] leading-relaxed text-spread-ink/80">
             {NOTICE.pre}
             <strong className="font-semibold text-spread-orangedeep">{NOTICE.em1}</strong>
             {NOTICE.mid}
             <strong className="font-semibold text-spread-orangedeep">{NOTICE.em2}</strong>
             {NOTICE.post}
           </p>
-        </div>
-      </Shot>
-    ),
-  },
-  {
-    prompt: 'Movie night at a friend’s place. Which remote do you reach for?',
-    law: 'Hick’s Law',
-    kicker: 'Every extra option taxes the decision — on any device.',
-    a: (
-      <Shot>
-        <div className="flex h-full items-center justify-center">
-          <Remote simple={false} />
-        </div>
-      </Shot>
-    ),
-    b: (
-      <Shot>
-        <div className="flex h-full items-center justify-center">
-          <Remote simple />
+          <button className="mt-2.5 rounded bg-spread-ink px-2.5 py-1 text-[11px] text-white">
+            Got it
+          </button>
         </div>
       </Shot>
     ),
@@ -714,73 +685,67 @@ const QUIZ: QuizBoard[] = [
     kicker: 'The explanation belongs beside the thing it explains.',
     a: (
       <Shot>
-        <div className="flex h-full flex-col items-center justify-center gap-4">
-          <Shelf labeled={false} />
-          <p className="text-[10.5px] text-spread-ink/60">
-            1 — side panel&ensp;·&ensp;2 — shelf&ensp;·&ensp;3 — cam screw&ensp;·&ensp;see page 4
-          </p>
-        </div>
+        <ImgOr
+          src="/quiz/ikea-a.png"
+          alt="Assembly sheet: numbered parts, legend at the bottom of the page"
+          fallback={
+            <div className="flex h-full flex-col items-center justify-center gap-4">
+              <Shelf labeled={false} />
+              <p className="text-[10.5px] text-spread-ink/60">
+                1 — side panel&ensp;·&ensp;2 — shelf&ensp;·&ensp;3 — cam screw&ensp;·&ensp;see page 4
+              </p>
+            </div>
+          }
+        />
       </Shot>
     ),
     b: (
       <Shot>
-        <div className="flex h-full items-center justify-center">
-          <Shelf labeled />
-        </div>
+        <ImgOr
+          src="/quiz/ikea-b.png"
+          alt="Assembly sheet: labels sit directly on the parts"
+          fallback={
+            <div className="flex h-full items-center justify-center">
+              <Shelf labeled />
+            </div>
+          }
+        />
       </Shot>
     ),
   },
   {
-    prompt: 'You need to call Priya. Go.',
+    prompt: 'Same question, asked two ways. Which one can you answer instantly?',
     law: 'Recognition over recall',
-    kicker: 'Choosing from what you see beats dredging from memory.',
+    kicker: 'You knew it the moment you saw it. Choosing beats retrieving.',
     a: (
       <Shot>
-        <div className="flex h-full flex-col items-center justify-center gap-2.5">
-          <div className="flex h-8 w-40 items-center rounded-[5px] border border-[#d9d4c6] px-2.5">
-            <span className="text-[11px] text-spread-ink/35">Priya’s number was…</span>
-          </div>
-          <div className="grid grid-cols-3 gap-1.5">
-            {['1', '2', '3', '4', '5', '6', '7', '8', '9', '*', '0', '#'].map((k) => (
-              <span
-                key={k}
-                className="flex h-8 w-11 items-center justify-center rounded-[5px] border border-[#d9d4c6] text-[12px] text-spread-ink/70"
-              >
-                {k}
-              </span>
-            ))}
+        <div className="mx-auto flex h-full w-64 flex-col justify-center">
+          <p className="text-[14px] font-semibold leading-snug text-spread-ink">
+            In which year did the first human land on the Moon?
+          </p>
+          <div className="mt-4 flex h-10 items-center rounded-[6px] border border-[#d9d4c6] px-3">
+            <span className="text-[12px] text-spread-ink/35">Type the year…</span>
+            <span className="ml-0.5 h-4 w-[1.5px] bg-spread-ink/50" />
           </div>
         </div>
       </Shot>
     ),
     b: (
       <Shot>
-        <div className="flex h-full flex-col items-center justify-center gap-2">
-          {[
-            { n: 'Anaya', tone: '#5b7fb3' },
-            { n: 'Priya', tone: '#c65b4e' },
-            { n: 'Rohan', tone: '#5f9e6e' },
-          ].map(({ n, tone }) => (
-            <div
-              key={n}
-              className={`flex w-48 items-center gap-2.5 rounded-[7px] border p-2 ${
-                n === 'Priya' ? 'border-spread-orangeplate' : 'border-[#e2ddd1]'
-              }`}
-            >
+        <div className="mx-auto flex h-full w-64 flex-col justify-center">
+          <p className="text-[14px] font-semibold leading-snug text-spread-ink">
+            In which year did the first human land on the Moon?
+          </p>
+          <div className="mt-4 grid grid-cols-2 gap-2">
+            {['1965', '1969', '1972', '1975'].map((y) => (
               <span
-                className="flex h-7 w-7 items-center justify-center rounded-full text-[11px] font-semibold text-white"
-                style={{ background: tone }}
+                key={y}
+                className="flex h-10 items-center justify-center rounded-[6px] border border-[#d9d4c6] text-[13px] text-spread-ink/80"
               >
-                {n[0]}
+                {y}
               </span>
-              <span className="flex-1 text-[12.5px] text-spread-ink">{n}</span>
-              {n === 'Priya' && (
-                <span className="rounded bg-spread-orangeplate px-2 py-0.5 text-[10.5px] font-medium text-white">
-                  Call
-                </span>
-              )}
-            </div>
-          ))}
+            ))}
+          </div>
         </div>
       </Shot>
     ),
@@ -791,44 +756,65 @@ const QUIZ: QuizBoard[] = [
     kicker: 'The cheapest mistake is the one that never happens.',
     a: (
       <Shot>
-        <div className="mx-auto mt-1 w-60 rounded-[7px] border border-[#e2ddd1]">
-          <p className="border-b border-[#efeadd] px-3 py-1.5 text-[10.5px] text-spread-ink/50">
-            To: leadership@company.com
-          </p>
-          <p className="px-3 py-2 text-[11.5px] leading-snug text-spread-ink/80">
-            Hi all, the final deck is attached. Would love thoughts before Friday.
-          </p>
-          <div className="px-3 pb-2.5">
-            <span className="rounded bg-spread-ink px-2.5 py-1 text-[10.5px] text-white">Sent ✓</span>
+        <div className="mx-auto w-[280px] overflow-hidden rounded-[8px] border border-[#e2ddd1] bg-white shadow-sm">
+          <div className="flex items-center gap-2 border-b border-[#efeadd] px-3 py-2">
+            <span className="h-2 w-2 rounded-full bg-[#e2ddd1]" />
+            <span className="h-2 w-2 rounded-full bg-[#e2ddd1]" />
+            <span className="ml-1 text-[11.5px] font-semibold text-spread-ink">Final deck</span>
+            <span className="ml-auto text-[10px] text-spread-ink/40">Inbox</span>
           </div>
-        </div>
-        <div className="mx-auto mt-3 w-60 rounded-[7px] border border-bad/40 bg-bad/10 px-3 py-2">
-          <p className="text-[11px] font-medium text-bad">
-            Re: re: re: “There’s no attachment.”
-          </p>
+          <div className="px-3 py-2.5">
+            <div className="flex items-center gap-2">
+              <span className="flex h-6 w-6 items-center justify-center rounded-full bg-spread-ink text-[10px] font-semibold text-white">
+                S
+              </span>
+              <span className="text-[11px] font-medium text-spread-ink">You</span>
+              <span className="text-[10px] text-spread-ink/40">to Leadership · 10:42</span>
+            </div>
+            <p className="mt-1.5 text-[12px] leading-snug text-spread-ink/80">
+              Hi all, please find the final deck attached. Would love your thoughts before Friday.
+            </p>
+          </div>
+          <div className="border-t border-[#efeadd] bg-bad/5 px-3 py-2.5">
+            <div className="flex items-center gap-2">
+              <span className="flex h-6 w-6 items-center justify-center rounded-full bg-[#5b7fb3] text-[10px] font-semibold text-white">
+                R
+              </span>
+              <span className="text-[11px] font-medium text-spread-ink">Ravi</span>
+              <span className="text-[10px] text-spread-ink/40">10:44</span>
+            </div>
+            <p className="mt-1.5 text-[12px] font-medium leading-snug text-bad">
+              Image not received. I don’t see anything attached?
+            </p>
+          </div>
         </div>
       </Shot>
     ),
     b: (
       <Shot>
-        <div className="mx-auto mt-1 w-60 rounded-[7px] border border-[#e2ddd1] opacity-50">
-          <p className="border-b border-[#efeadd] px-3 py-1.5 text-[10.5px] text-spread-ink/50">
-            To: leadership@company.com
+        <div className="mx-auto w-[280px] overflow-hidden rounded-[8px] border border-[#e2ddd1] bg-white opacity-60">
+          <div className="flex items-center gap-2 border-b border-[#efeadd] px-3 py-2">
+            <span className="text-[11.5px] font-semibold text-spread-ink">New message</span>
+            <span className="ml-auto text-[10px] text-spread-ink/40">To: Leadership</span>
+          </div>
+          <p className="px-3 py-2 text-[12px] leading-snug text-spread-ink/80">
+            Hi all, please find the final deck attached. Would love your thoughts before Friday.
           </p>
-          <p className="px-3 py-2 text-[11.5px] leading-snug text-spread-ink/80">
-            Hi all, the final deck is attached. Would love thoughts before Friday.
-          </p>
+          <div className="flex items-center gap-2.5 border-t border-[#efeadd] px-3 py-2">
+            <span className="rounded bg-spread-ink px-2.5 py-1 text-[10.5px] text-white">Send</span>
+            <span className="text-[12px] text-spread-ink/40">📎</span>
+          </div>
         </div>
-        <div className="absolute left-1/2 top-1/2 w-56 -translate-x-1/2 -translate-y-1/2 rounded-[8px] bg-white p-3.5 shadow-lg">
-          <p className="text-[12.5px] font-semibold text-spread-ink">No attachment found</p>
-          <p className="mt-1 text-[11px] leading-snug text-spread-ink/60">
-            You wrote “attached”, but nothing is attached yet.
+        <div className="absolute left-1/2 top-1/2 w-60 -translate-x-1/2 -translate-y-1/2 rounded-[8px] bg-white p-4 shadow-xl">
+          <p className="text-[13px] font-semibold text-spread-ink">No attachment found</p>
+          <p className="mt-1 text-[11.5px] leading-snug text-spread-ink/60">
+            You wrote “attached”, but there are no files attached to this message.
           </p>
-          <div className="mt-2.5 flex gap-1.5">
-            <button className="rounded bg-spread-orangeplate px-2.5 py-1 text-[11px] font-medium text-white">
+          <div className="mt-3 flex gap-1.5">
+            <button className="rounded bg-spread-orangeplate px-2.5 py-1 text-[11.5px] font-medium text-white">
               Attach file
             </button>
-            <button className="rounded border border-[#d9d4c6] px-2.5 py-1 text-[11px] text-spread-ink/60">
+            <button className="rounded border border-[#d9d4c6] px-2.5 py-1 text-[11.5px] text-spread-ink/60">
               Send anyway
             </button>
           </div>
