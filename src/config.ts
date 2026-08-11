@@ -231,6 +231,17 @@ export interface Principle {
   /** External resources shown in a "Resources" section beside the tool orbit. */
   resources?: Resource[]
   /**
+   * A photo spotted in the wild, opened from a small button under the intro.
+   * Click the image in the modal to flip between the two shots.
+   */
+  fieldNote?: {
+    /** Button label, e.g. "Spotted in the wild". */
+    label: string
+    caption: string
+    before: { src: string; caption: string }
+    after: { src: string; caption: string }
+  }
+  /**
    * The fill-in-the-blank statement shown on the cover. The first slot is a
    * picker (e.g. expertise); choosing a value fills every other slot to a
    * coherent persona via `statement.presets`.
@@ -739,6 +750,20 @@ export const CONFIG: Principle[] = [
     label: 'Hick’s Law',
     summary: 'Every extra choice taxes the decision. Narrow the path.',
     status: 'live',
+    fieldNote: {
+      label: 'Spotted in the wild',
+      caption: 'A visitor kiosk, this morning.',
+      before: {
+        src: '/hicks/kiosk-before.jpg',
+        caption:
+          'Four equal options in a dropdown you have to open first. Every visitor pays the same decision tax, and the most common answer is buried with the rest.',
+      },
+      after: {
+        src: '/hicks/kiosk-after.png',
+        caption:
+          'The likely choice becomes one large target; the rest stay available, ranked and quieter. Same four options, a fraction of the decision.',
+      },
+    },
     cover:
       '**Decision time rises with the number and complexity of options,** roughly logarithmically. More choices doesn’t mean more help; it means more hesitation, and often abandonment.',
     intro: [

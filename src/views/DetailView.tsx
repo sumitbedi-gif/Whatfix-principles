@@ -7,6 +7,7 @@ import { Playground } from '../components/Playground'
 import { PactStickerBoard } from '../components/PactStickerBoard'
 import { ToolOrbit } from '../components/ToolOrbit'
 import { ResourceCards } from '../components/ResourceCards'
+import { FieldNote } from '../components/FieldNote'
 import { PrincipleCover } from './PrincipleCover'
 
 const ease = [0.22, 1, 0.36, 1] as const
@@ -92,6 +93,8 @@ function PlaygroundLayout({ principle }: { principle: Principle }) {
               {para}
             </p>
           ))}
+
+          {principle.fieldNote && <FieldNote note={principle.fieldNote} />}
         </div>
 
         {/* Scenario accordions, selecting one drives the playground */}
