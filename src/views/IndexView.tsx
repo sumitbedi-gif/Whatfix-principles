@@ -93,7 +93,7 @@ function ShortSetToggle({
       <span
         className={`h-1.5 w-1.5 rounded-full ${on ? 'bg-spread-orange' : 'bg-spread-paper/30'}`}
       />
-      {on ? 'Short set · 6' : 'Full · 15'}
+      {on ? 'Short set · 8' : 'Full · 15'}
     </button>
   )
 }

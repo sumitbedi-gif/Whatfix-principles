@@ -13,6 +13,9 @@ export const SHORT_SET_IDS = [
   'hicks-law',
   'error-prevention',
   'multimedia-modality',
+  // Held in reserve at the end: shown only if time allows.
+  'coherence',
+  'reduce-motor-load',
 ] as const
 
 const KEY = 'bfb-short-set'
