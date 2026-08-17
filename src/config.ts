@@ -462,7 +462,7 @@ export const CONFIG: Principle[] = [
   {
     id: 'know-your-product',
     ordinal: '02',
-    label: 'Content that fits the use case',
+    label: 'Content fit',
     summary: 'Start from the moment, not the content type. The job picks the tool.',
     status: 'live',
     cover:
