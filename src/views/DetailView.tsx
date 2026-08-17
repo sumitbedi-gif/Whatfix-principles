@@ -289,7 +289,7 @@ function FrameworkLayout({ principle }: { principle: Principle }) {
   )
 }
 
-/* ── Tools layout (Know your product / intents → orbit) ──────────────────── */
+/* ── Tools layout (content fits the use case / intents → orbit) ─────────── */
 
 function IntentAccordion({
   index,

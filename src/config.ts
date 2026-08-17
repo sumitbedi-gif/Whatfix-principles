@@ -223,7 +223,7 @@ export interface Principle {
    */
   personaCards?: PersonaCard[]
   /**
-   * A "tools" principle (Know your product) renders intent accordions + an
+   * A "tools" principle (content that fits the use case) renders intent accordions + an
    * orbiting constellation of Studio content types that highlight per intent.
    */
   tools?: Tool[]
@@ -462,14 +462,14 @@ export const CONFIG: Principle[] = [
   {
     id: 'know-your-product',
     ordinal: '02',
-    label: 'Know your product',
-    summary: 'Guidance only lands when it speaks the product’s own language.',
+    label: 'Content that fits the use case',
+    summary: 'Start from the moment, not the content type. The job picks the tool.',
     status: 'live',
     cover:
-      'Knowing your product isn’t knowing the names of the content types. It’s **knowing what each one is for:** its job, its cost, when it earns its place, and when it’s the wrong answer.',
+      'You know every content type. The craft is upstream of that: **start from the use case, and let the moment pick the tool.** Same message, different vehicle, completely different result.',
     intro: [
-      'Last principle, you learned to read the user. Now you learn the tools, because matching one to the other, at the right moment, is the entire job. The same message can succeed as a Smart Tip and fail as a modal. The tool is half the design.',
-      'So don’t organize by content type. Organize by the job to be done. Start from the moment and work back to the tool. Pick an intent on the right and watch which tools earn their place, and which are the wrong answer.',
+      'The same message can succeed as a Smart Tip and fail as a modal. Nothing changed but the vehicle, so the vehicle is half the design.',
+      'Which means the useful question is never “what shall we build?” It’s “what’s the job, right here, right now?” Start from the use case and work back to the tool. Pick an intent on the right and watch which content types earn their place, and which are simply the wrong answer.',
     ],
     tools: [
       { id: 'flow', label: 'Flow', icon: 'flow' },

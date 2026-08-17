@@ -22,6 +22,9 @@ import { readShortSet, writeShortSet, visiblePrinciples } from '../shortSet'
 
 const EASE = [0.16, 1, 0.3, 1] as const
 
+/** How many trailing short-set cards start hidden behind a dotted slot. */
+const RESERVE_COUNT = 2
+
 /** Two rows of fine leader dots, in the current text colour. */
 function DotLeader({ className = '' }: { className?: string }) {
   return (
@@ -254,7 +257,13 @@ function GridView({ reduceMotion, shortSet }: { reduceMotion: boolean; shortSet:
 const GAP = 16
 
 function TimelineView({ reduceMotion, shortSet }: { reduceMotion: boolean; shortSet: boolean }) {
-  const list = visiblePrinciples(shortSet)
+  const all = visiblePrinciples(shortSet)
+  // In the short set the final two are held back as dotted placeholders and
+  // only appear when the presenter clicks them, so the room can't see what
+  // is coming until it is summoned.
+  const reserveFrom = shortSet ? all.length - RESERVE_COUNT : all.length
+  const [revealed, setRevealed] = useState<Set<string>>(() => new Set())
+  const list = all
   const stripRef = useRef<HTMLDivElement>(null)
   const [stripW, setStripW] = useState(0)
   const [center, setCenter] = useState(() => {
@@ -289,14 +298,23 @@ function TimelineView({ reduceMotion, shortSet }: { reduceMotion: boolean; short
       } else if (e.key === 'Enter' || e.key === ' ') {
         e.preventDefault()
         setCenter((c) => {
-          window.location.hash = `#/${list[c].id}`
+          const p = list[c]
+          // A hidden reserve slot reveals on the first Enter, opens on the next.
+          if (c >= reserveFrom && !revealedRef.current.has(p.id)) {
+            setRevealed((r) => new Set(r).add(p.id))
+            return c
+          }
+          window.location.hash = `#/${p.id}`
           return c
         })
       }
     }
     window.addEventListener('keydown', onKey)
     return () => window.removeEventListener('keydown', onKey)
-  }, [])
+  }, [reserveFrom])
+
+  const revealedRef = useRef(revealed)
+  revealedRef.current = revealed
 
   const cardW = stripW === 0 ? 380 : stripW < 640 ? Math.max(260, stripW * 0.78) : 380
   const x = (stripW - cardW) / 2 - center * (cardW + GAP)
@@ -342,7 +360,23 @@ function TimelineView({ reduceMotion, shortSet }: { reduceMotion: boolean; short
                       }
                 }
               >
-                {isCenter ? (
+                {i >= reserveFrom && !revealed.has(p.id) ? (
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setRevealed((r) => new Set(r).add(p.id))
+                      setCenter(i)
+                    }}
+                    className="group flex h-full w-full flex-col items-center justify-center rounded-[10px] border-2 border-dashed border-spread-paper/25 text-spread-paper/40 transition-colors hover:border-spread-orange hover:text-spread-orange"
+                    style={{ minHeight: 380 }}
+                    aria-label="Reveal the next principle"
+                  >
+                    <span className="text-[26px] leading-none">+</span>
+                    <span className="mt-3 font-mono text-[9px] uppercase tracking-eyebrow">
+                      {num}
+                    </span>
+                  </button>
+                ) : isCenter ? (
                   <a
                     href={`#/${p.id}`}
                     className="flex h-full w-full flex-col outline-none"

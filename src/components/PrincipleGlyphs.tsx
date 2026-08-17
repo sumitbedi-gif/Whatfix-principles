@@ -45,7 +45,7 @@ function GlyphUser() {
   )
 }
 
-/** 02 Know your product — an orbit of tools around one centre. */
+/** 02 Content that fits the use case — an orbit of tools around one centre. */
 function GlyphProduct() {
   return (
     <Svg title="Orbits with satellites">
