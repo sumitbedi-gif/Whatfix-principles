@@ -1,8 +1,9 @@
 import { useEffect, useRef, useState, type ReactNode } from 'react'
 import { AnimatePresence, motion, useReducedMotion } from 'motion/react'
-import { CONFIG, type Principle } from '../config'
+import { type Principle } from '../config'
 import { PrincipleGlyph } from '../components/PrincipleGlyphs'
 import { readLastPrinciple, rememberViewMode } from '../lastPrinciple'
+import { readShortSet, writeShortSet, visiblePrinciples } from '../shortSet'
 
 /**
  * The landing page is a dark editorial "print spread": cream plates on warm
@@ -69,6 +70,31 @@ function ModeSwitch({ active }: { active: ViewMode }) {
         </a>
       ))}
     </div>
+  )
+}
+
+
+/** Tiny corner toggle: crunch the deck down to the six-principle demo set. */
+function ShortSetToggle({
+  on,
+  onChange,
+}: {
+  on: boolean
+  onChange: (v: boolean) => void
+}) {
+  return (
+    <button
+      type="button"
+      onClick={() => onChange(!on)}
+      className="fixed bottom-4 left-4 z-40 flex items-center gap-2 rounded-full border border-spread-paper/15 bg-spread-bg/80 px-3 py-1.5 font-mono text-[9px] uppercase tracking-eyebrow text-spread-paper/50 backdrop-blur transition-colors hover:text-spread-paper"
+      aria-pressed={on}
+      title="Toggle the short demo set (6 principles)"
+    >
+      <span
+        className={`h-1.5 w-1.5 rounded-full ${on ? 'bg-spread-orange' : 'bg-spread-paper/30'}`}
+      />
+      {on ? 'Short set · 6' : 'Full · 15'}
+    </button>
   )
 }
 
@@ -207,7 +233,8 @@ function GridCard({
   )
 }
 
-function GridView({ reduceMotion }: { reduceMotion: boolean }) {
+function GridView({ reduceMotion, shortSet }: { reduceMotion: boolean; shortSet: boolean }) {
+  const list = visiblePrinciples(shortSet)
   return (
     <motion.div
       className="mt-6 grid grid-cols-1 gap-x-1 gap-y-6 sm:grid-cols-2 sm:gap-y-1 lg:grid-cols-3"
@@ -217,7 +244,7 @@ function GridView({ reduceMotion }: { reduceMotion: boolean }) {
         shown: { transition: { staggerChildren: 0.07, delayChildren: 0.15 } },
       }}
     >
-      {CONFIG.map((p, i) => (
+      {list.map((p, i) => (
         <GridCard key={p.id} principle={p} index={i} />
       ))}
     </motion.div>
@@ -226,13 +253,18 @@ function GridView({ reduceMotion }: { reduceMotion: boolean }) {
 
 const GAP = 16
 
-function TimelineView({ reduceMotion }: { reduceMotion: boolean }) {
+function TimelineView({ reduceMotion, shortSet }: { reduceMotion: boolean; shortSet: boolean }) {
+  const list = visiblePrinciples(shortSet)
   const stripRef = useRef<HTMLDivElement>(null)
   const [stripW, setStripW] = useState(0)
   const [center, setCenter] = useState(() => {
-    const i = CONFIG.findIndex((p) => p.id === readLastPrinciple())
+    const i = list.findIndex((p) => p.id === readLastPrinciple())
     return i >= 0 ? i : 0
   })
+
+  useEffect(() => {
+    setCenter((c) => Math.min(c, list.length - 1))
+  }, [list.length])
 
   useEffect(() => {
     const el = stripRef.current
@@ -250,14 +282,14 @@ function TimelineView({ reduceMotion }: { reduceMotion: boolean }) {
       if (e.metaKey || e.ctrlKey || e.altKey) return
       if (e.key === 'ArrowRight' || e.key === 'PageDown') {
         e.preventDefault()
-        setCenter((c) => Math.min(c + 1, CONFIG.length - 1))
+        setCenter((c) => Math.min(c + 1, list.length - 1))
       } else if (e.key === 'ArrowLeft' || e.key === 'PageUp') {
         e.preventDefault()
         setCenter((c) => Math.max(c - 1, 0))
       } else if (e.key === 'Enter' || e.key === ' ') {
         e.preventDefault()
         setCenter((c) => {
-          window.location.hash = `#/${CONFIG[c].id}`
+          window.location.hash = `#/${list[c].id}`
           return c
         })
       }
@@ -283,7 +315,7 @@ function TimelineView({ reduceMotion }: { reduceMotion: boolean }) {
               : { type: 'spring', stiffness: 260, damping: 32 }
           }
         >
-          {CONFIG.map((p, i) => {
+          {list.map((p, i) => {
             const isCenter = i === center
             const num = String(i + 1).padStart(3, '0')
             return (
@@ -344,11 +376,11 @@ function TimelineView({ reduceMotion }: { reduceMotion: boolean }) {
           ←
         </button>
         <span className="font-mono text-[10px] uppercase tracking-eyebrow">
-          {String(center + 1).padStart(3, '0')} / 015
+          {String(center + 1).padStart(3, '0')} / {String(list.length).padStart(3, '0')}
         </span>
         <button
           type="button"
-          onClick={() => setCenter((c) => Math.min(c + 1, CONFIG.length - 1))}
+          onClick={() => setCenter((c) => Math.min(c + 1, list.length - 1))}
           className="font-mono text-[11px] tracking-eyebrow opacity-60 transition-opacity hover:opacity-100"
           aria-label="Next principle"
         >
@@ -383,19 +415,24 @@ const deckVariants = {
   exit: (d: number) => (d >= 0 ? toDiscard : fromPile),
 }
 
-function DeckView({ reduceMotion }: { reduceMotion: boolean }) {
+function DeckView({ reduceMotion, shortSet }: { reduceMotion: boolean; shortSet: boolean }) {
+  const list = visiblePrinciples(shortSet)
   const [center, setCenter] = useState(() => {
-    const i = CONFIG.findIndex((p) => p.id === readLastPrinciple())
+    const i = list.findIndex((p) => p.id === readLastPrinciple())
     return i >= 0 ? i : 0
   })
   const [dir, setDir] = useState(1)
 
   const go = (d: number) =>
     setCenter((c) => {
-      const next = Math.min(Math.max(c + d, 0), CONFIG.length - 1)
+      const next = Math.min(Math.max(c + d, 0), list.length - 1)
       if (next !== c) setDir(d)
       return next
     })
+
+  useEffect(() => {
+    setCenter((c) => Math.min(c, list.length - 1))
+  }, [list.length])
 
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => {
@@ -409,7 +446,7 @@ function DeckView({ reduceMotion }: { reduceMotion: boolean }) {
       } else if (e.key === 'Enter' || e.key === ' ') {
         e.preventDefault()
         setCenter((c) => {
-          window.location.hash = `#/${CONFIG[c].id}`
+          window.location.hash = `#/${list[c].id}`
           return c
         })
       }
@@ -418,7 +455,7 @@ function DeckView({ reduceMotion }: { reduceMotion: boolean }) {
     return () => window.removeEventListener('keydown', onKey)
   }, [])
 
-  const p = CONFIG[center]
+  const p = list[center]
   const num = String(center + 1).padStart(3, '0')
 
   return (
@@ -1095,6 +1132,11 @@ function QuizView({ reduceMotion }: { reduceMotion: boolean }) {
 
 export function IndexView({ mode }: { mode: ViewMode }) {
   const reduceMotion = useReducedMotion() ?? false
+  const [shortSet, setShortSet] = useState(readShortSet)
+  const setShort = (v: boolean) => {
+    writeShortSet(v)
+    setShortSet(v)
+  }
 
   // Own the page background while the spread is mounted, so overscroll and
   // short viewports stay charcoal instead of flashing the detail-page white.
@@ -1141,7 +1183,8 @@ export function IndexView({ mode }: { mode: ViewMode }) {
   if (mode === 'deck') {
     return (
       <div className="min-h-screen bg-spread-bg" style={spreadBg}>
-        <DeckView reduceMotion={reduceMotion} />
+        <DeckView reduceMotion={reduceMotion} shortSet={shortSet} />
+        <ShortSetToggle on={shortSet} onChange={setShort} />
       </div>
     )
   }
@@ -1151,8 +1194,9 @@ export function IndexView({ mode }: { mode: ViewMode }) {
       <div className="flex min-h-screen flex-col bg-spread-bg" style={spreadBg}>
         <ModeSwitch active="timeline" />
         <div className="flex flex-1 flex-col justify-center pb-12">
-          <TimelineView reduceMotion={reduceMotion} />
+          <TimelineView reduceMotion={reduceMotion} shortSet={shortSet} />
         </div>
+        <ShortSetToggle on={shortSet} onChange={setShort} />
       </div>
     )
   }
@@ -1161,8 +1205,9 @@ export function IndexView({ mode }: { mode: ViewMode }) {
     <div className="min-h-screen bg-spread-bg" style={spreadBg}>
       <ModeSwitch active="grid" />
       <div className="mx-auto w-full max-w-[1200px] px-4 pb-16 pt-4 sm:px-8">
-        <GridView reduceMotion={reduceMotion} />
+        <GridView reduceMotion={reduceMotion} shortSet={shortSet} />
       </div>
+      <ShortSetToggle on={shortSet} onChange={setShort} />
     </div>
   )
 }
